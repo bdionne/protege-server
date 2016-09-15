@@ -26,7 +26,8 @@
     },
     "alice": {
       "foo": [
-        "0d4073aa-3790-4a6a-9941-76d02c765859"
+        "0d4073aa-3790-4a6a-9941-76d02c765859",
+        "mp-workflow-modeler"
       ]
     }
   },
@@ -212,6 +213,19 @@
       ]
     },
     {
+      "id": "mp-workflow-modeler",
+      "name": "WorkFlow Modeler",
+      "description": "a typical modeler",
+      "operations": [
+        "retire",
+        "remove-axiom",
+        "add-axiom",
+        "merge",
+        "clone",
+        "Split"
+      ]
+    },
+    {
       "id": "fd461d3a-8f94-49f3-af4b-b4cec1d309cf",
       "name": "test-scroll-ops-display",
       "description": "A user with this role should be able to do many things, but it\u0027s difficult to see the operations in the display panel",
@@ -227,19 +241,6 @@
         "add-operation",
         "add-import",
         "open-project",
-        "Split"
-      ]
-    },
-    {
-      "id": "0d4073aa-3790-4a6a-9941-76d02c765859",
-      "name": "workflow_modeler",
-      "description": "a typical modeler",
-      "operations": [
-        "retire",
-        "remove-axiom",
-        "add-axiom",
-        "merge",
-        "clone",
         "Split"
       ]
     }
