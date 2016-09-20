@@ -7,11 +7,7 @@
   "policy": {
     "root": {
       "all-projects": [
-        "mp-admin",
-        "mp-project-manager"
-      ],
-      "foo": [
-        "mp-project-manager"
+        "f63c9855-7d95-4650-8c60-c3a55f36ebd3"
       ]
     },
     "guest": {
@@ -22,6 +18,9 @@
     "bob": {
       "foo": [
         "mp-project-manager"
+      ],
+      "all-projects": [
+        "mp-admin"
       ]
     },
     "alice": {
@@ -112,6 +111,9 @@
         "merge_source": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Merge_Source"
         ],
+        "semantic_type": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Semantic_Type"
+        ],
         "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#DEFINITION": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Review_Date",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Reviewer_Name",
@@ -150,34 +152,23 @@
     {
       "id": "mp-admin",
       "name": "Administrator",
-      "description": "A user with this role is allowed to do any operation on the server",
+      "description": "A user with this role is allowed to do any operation on the metaproject. This role is like a Work Flow Manager who can create/update/delete projects",
       "operations": [
         "add-user",
         "remove-role",
-        "remove-axiom",
-        "add-axiom",
-        "remove-import",
-        "add-ontology-annotation",
-        "remove-user",
-        "add-role",
-        "reject-change",
-        "modify-project",
-        "remove-operation",
-        "stop-server",
-        "remove-ontology-annotation",
         "modify-user",
-        "modify-ontology-iri",
-        "remove-project",
         "open-project",
-        "add-import",
+        "remove-project",
         "modify-operation",
         "retract-role",
-        "modify-settings",
+        "remove-user",
         "add-project",
+        "add-role",
+        "modify-project",
         "assign-role",
         "add-operation",
-        "modify-role",
-        "accept-change"
+        "remove-operation",
+        "modify-role"
       ]
     },
     {
@@ -189,8 +180,20 @@
       ]
     },
     {
+      "id": "f63c9855-7d95-4650-8c60-c3a55f36ebd3",
+      "name": "Sysadmin",
+      "description": "Responsible for the care and feeding of the server",
+      "operations": [
+        "stop-server",
+        "retract-role",
+        "add-role",
+        "modify-settings",
+        "modify-role"
+      ]
+    },
+    {
       "id": "mp-project-manager",
-      "name": "Project Manager",
+      "name": "WorkFlow Manager",
       "description": "A user with this role is allowed to create, remove, modify and open a project, as well as to perform any ontology operations",
       "operations": [
         "remove-axiom",
@@ -200,10 +203,7 @@
         "add-import",
         "open-project",
         "remove-import",
-        "remove-project",
         "add-ontology-annotation",
-        "add-project",
-        "modify-project",
         "reject-change",
         "retire",
         "merge",
@@ -222,24 +222,6 @@
         "add-axiom",
         "merge",
         "clone",
-        "Split"
-      ]
-    },
-    {
-      "id": "fd461d3a-8f94-49f3-af4b-b4cec1d309cf",
-      "name": "test-scroll-ops-display",
-      "description": "A user with this role should be able to do many things, but it\u0027s difficult to see the operations in the display panel",
-      "operations": [
-        "add-user",
-        "add-project",
-        "add-role",
-        "retire",
-        "remove-ontology-annotation",
-        "add-axiom",
-        "merge",
-        "modify-user",
-        "add-operation",
-        "add-import",
         "open-project",
         "Split"
       ]
@@ -515,12 +497,14 @@
     }
   ],
   "properties": {
+    "login_timeout_period": "1800000",
     "codegen_suffix": "S",
     "codegen_file": "gencode",
     "authenticate": "org.protege.editor.owl.server.security.DefaultLoginService",
     "codegen_delimeter": "-",
     "evshistory_file": "evs_history",
+    "ldap_port": "389",
     "codegen_prefix": "C",
-    "login_timeout_period": "1800000"
+    "ldap_host": "ldap://addcpool.nih.gov"
   }
 }
