@@ -52,13 +52,13 @@
       "emailAddress": "bob"
     }
   ],
-  "projects": [
+  "projects": [    
     {
       "id": "foo",
       "name": "foo",
       "description": "foo",
       "file": "root/data/foo/foo.history",
-      "owner": "root",
+      "owner": "bob",
       "options": {
         "deprecated_child": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#OLD_CHILD"
@@ -503,8 +503,6 @@
     "authenticate": "org.protege.editor.owl.server.security.DefaultLoginService",
     "codegen_delimeter": "-",
     "evshistory_file": "evs_history",
-    "ldap_port": "389",
-    "codegen_prefix": "C",
-    "ldap_host": "ldap://addcpool.nih.gov"
+    "codegen_prefix": "C"
   }
 }
