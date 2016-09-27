@@ -94,7 +94,8 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Concept_Status",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Merge_Source",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Merge_Target",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Split_From"
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Split_From",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
         ],
         "preretired_root": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Preretired_Concepts"

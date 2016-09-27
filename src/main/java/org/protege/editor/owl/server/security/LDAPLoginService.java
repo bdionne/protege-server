@@ -37,6 +37,9 @@ public class LDAPLoginService implements LoginService {
 			LDAPConnection ldap = new LDAPConnection(host, port,
 					"CN=" + userid.get() + ",OU=NCI,OU=NIH,OU=AD,DC=Nih,DC=GOV", password.getPassword());
 			
+			//CN=fragosog,OU=Users,OU=NCI,OU=NIH,OU=AD,DC=nih,DC=gov
+
+			
 			
 			
 			if (ldap.isConnected()) {
