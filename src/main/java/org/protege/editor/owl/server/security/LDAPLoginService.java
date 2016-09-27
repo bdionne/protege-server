@@ -22,6 +22,8 @@ public class LDAPLoginService implements LoginService {
     
     private static final String LDAPHOST = "ldap_host";
     private static final String LDAPPORT = "ldap_port";
+    private static final String LDAPPREFIX = "ldap_dn_prefix";
+    private static final String LDAPSUFFIX = "ldap_dn_suffix";
    
     public LDAPLoginService() {}   
 
@@ -34,8 +36,12 @@ public class LDAPLoginService implements LoginService {
     		String host = config.getProperty(LDAPHOST);
     		int port = Integer.parseInt(config.getProperty(LDAPPORT));
     		
+    		String prefix = config.getProperty(LDAPPREFIX);
+    		String suffix = config.getProperty(LDAPSUFFIX);
+    		
+    		
 			LDAPConnection ldap = new LDAPConnection(host, port,
-					"CN=" + userid.get() + ",OU=NCI,OU=NIH,OU=AD,DC=Nih,DC=GOV", password.getPassword());
+					prefix + userid.get() + suffix, password.getPassword());
 			
 			//CN=fragosog,OU=Users,OU=NCI,OU=NIH,OU=AD,DC=nih,DC=gov
 
