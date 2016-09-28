@@ -1,8 +1,13 @@
 package org.protege.editor.owl.server.api;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.protege.editor.owl.server.versioning.api.HistoryFile;
+
+import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import edu.stanford.protege.metaproject.api.User;
 
@@ -37,5 +42,19 @@ public abstract class ServerLayer implements Server {
             String template = "[%s] %s";
             return String.format(template, operation, message);
         }
+    }
+    
+    public HistoryFile createHistoryFile(String projectId, String projectName) throws IOException {
+        String rootDir = getConfiguration().getServerRoot() + File.separator + projectId;
+        String filename = projectName.replaceAll("\\s+","_"); // to snake-case
+        return HistoryFile.createNew(rootDir, filename);
+    }
+    
+    
+    public String  getHistoryFilePath(Project proj) throws IOException {
+    	
+    	HistoryFile f = createHistoryFile(proj.getId().get(), proj.getName().get());
+    	
+    	return f.getAbsolutePath();
     }
 }

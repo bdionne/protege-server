@@ -4,6 +4,9 @@ import edu.stanford.protege.metaproject.api.AuthToken;
 import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.exception.UnknownProjectIdException;
+
+import java.io.IOException;
+
 import org.protege.editor.owl.server.api.ChangeService;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.api.ServerFilterAdapter;
@@ -41,7 +44,7 @@ public class ConflictDetectionFilter extends ServerFilterAdapter {
         try {
             Project project = getConfiguration().getProject(projectId);
             // TODO: head revision is checked here, but another thread may already be proceeding to do a commit
-            String projectFilePath = project.getFile().getAbsolutePath();
+            String projectFilePath = getHistoryFilePath(project);
             HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
             DocumentRevision serverHeadRevision = changeService.getHeadRevision(historyFile);
             DocumentRevision commitBaseRevision = commitBundle.getBaseRevision();
@@ -55,8 +58,8 @@ public class ConflictDetectionFilter extends ServerFilterAdapter {
             logger.error(printLog(token.getUser(), "Commit changes", e.getMessage()));
             throw new ServerServiceException(e.getMessage(), e);
         }
-        catch (InvalidHistoryFileException e) {
-            String message = "Unable to access history file in remote server";
+        catch (InvalidHistoryFileException | IOException e) {
+        	String message = "Unable to access history file in remote server";
             logger.error(printLog(token.getUser(), "Commit changes", message), e);
             throw new ServerServiceException(message, e);
         }

@@ -16,6 +16,7 @@ import org.protege.editor.owl.server.versioning.api.ServerDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -49,7 +50,7 @@ public class ChangeManagementFilter extends ServerFilterAdapter {
         try {
             ChangeHistory changeHistory = super.commit(token, projectId, commitBundle);
             Project project = getConfiguration().getProject(projectId);
-            String projectFilePath = project.getFile().getAbsolutePath();
+            String projectFilePath = getHistoryFilePath(project);
             HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
             changePool.appendChanges(historyFile, changeHistory);
             return changeHistory;
@@ -61,7 +62,12 @@ public class ChangeManagementFilter extends ServerFilterAdapter {
         catch (InvalidHistoryFileException e) {
             logger.error(printLog(token.getUser(), "Commit changes", e.getMessage()), e);
             throw new ServerServiceException(e.getMessage(), e);
-        }
+        } catch (IOException e) {
+        	String message = "Unable to access history file in remote server";
+            logger.error(printLog(token.getUser(), "Commit changes", message), e);
+            throw new ServerServiceException(message, e);
+			
+		}
     }
 
     

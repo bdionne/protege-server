@@ -141,7 +141,7 @@ public class ProtegeServer extends ServerLayer {
         try {
             HistoryFile historyFile = createHistoryFile(projectId.get(), projectName.get());
             Project newProject = factory.getProject(
-                    projectId, projectName, description, historyFile, owner, options);
+                    projectId, projectName, description, owner, options);
             try {
                 writeLock.lock();
                 logger.info(printLog(token.getUser(), "Add project", newProject.toString()));
@@ -166,12 +166,8 @@ public class ProtegeServer extends ServerLayer {
         }
     }
 
-    private HistoryFile createHistoryFile(String projectId, String projectName) throws IOException {
-        String rootDir = configuration.getServerRoot() + File.separator + projectId;
-        String filename = projectName.replaceAll("\\s+","_"); // to snake-case
-        return HistoryFile.createNew(rootDir, filename);
-    }
-
+    
+   
     private ServerDocument createServerDocument(HistoryFile historyFile) {
         final URI serverAddress = configuration.getHost().getUri();
         final Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
@@ -196,7 +192,7 @@ public class ProtegeServer extends ServerLayer {
                     .removePolicy(projectId)
                     .createServerConfiguration();
             if (includeFile) {
-                String projectFilePath = project.getFile().getAbsolutePath();
+                String projectFilePath = getHistoryFilePath(project);
                 HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
                 File projectDir = historyFile.getParentFile();
                 FileUtils.deleteDirectory(projectDir);
@@ -245,7 +241,7 @@ public class ProtegeServer extends ServerLayer {
             logger.info(printLog(token.getUser(), "Open project", project.toString()));
             final URI serverAddress = configuration.getHost().getUri();
             final Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
-            final String path = project.getFile().getAbsolutePath();
+            final String path = getHistoryFilePath(project);
             if (registryPort.isPresent()) {
                 Port port = registryPort.get();
                 return new ServerDocument(serverAddress, port.get(), HistoryFile.openExisting(path));
@@ -262,7 +258,12 @@ public class ProtegeServer extends ServerLayer {
             String message = "Unable to access history file in remote server";
             logger.error(printLog(token.getUser(), "Open project", message), e);
             throw new ServerServiceException(message, e);
-        }
+        } catch (IOException e) {
+        	String message = "Failed to find history file in remote server";
+            logger.error(printLog(token.getUser(), "Add project", message));
+            throw new ServerServiceException(message, e);
+			
+		}
         finally {
             readLock.unlock();
         }
@@ -706,4 +707,6 @@ public class ProtegeServer extends ServerLayer {
             throw new ServerServiceException(message, e);
         }
     }
+    
+    
 }

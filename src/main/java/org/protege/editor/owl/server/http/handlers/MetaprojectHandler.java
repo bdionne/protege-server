@@ -210,8 +210,7 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 	private void createProjectSnapshot(ProjectId projectId, SnapShot snapshot, OutputStream os) throws ServerException {
 		try {
 			Project project = serverLayer.getConfiguration().getProject(projectId);
-			File projectFile = project.getFile();
-			saveProjectSnapshot(snapshot, getSnapShotFile(projectFile));
+			saveProjectSnapshot(snapshot, getSnapShotFile(project));
 		}
 		catch (IOException | UnknownProjectIdException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to create project snapshot", e);
@@ -242,8 +241,7 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 	private void retrieveProjectSnapshot(ProjectId projectId, OutputStream os) throws ServerException {
 		try {
 			Project project = serverLayer.getConfiguration().getProject(projectId);
-			File projectFile = project.getFile();
-			OWLOntology ontIn = loadProjectSnapshot(getSnapShotFile(projectFile));
+			OWLOntology ontIn = loadProjectSnapshot(getSnapShotFile(project));
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				oos.writeObject(new SnapShot(ontIn));
@@ -257,9 +255,17 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 		}
 	}
 
-	private static File getSnapShotFile(File historyFile) {
-		String fname = historyFile.getAbsolutePath() + "-snapshot";
-		return new File(fname);
+	private File getSnapShotFile(Project project) throws ServerException {
+		String fname;
+		try {
+			fname = serverLayer.getHistoryFilePath(project) + "-snapshot";
+			return new File(fname);
+		} catch (IOException e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to open snapshot file");
+
+			
+		}
+		
 	}
 
 	private OWLOntology loadProjectSnapshot(File snapshotFile) throws OWLOntologyCreationException, IOException {
