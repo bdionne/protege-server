@@ -481,7 +481,7 @@ public class ProtegeServer extends ServerLayer {
         try {
             writeLock.lock();
             configuration = new ConfigurationBuilder(configuration)
-                    .setServerRoot(new File(rootDirectory))
+                    .setServerRoot(rootDirectory)
                     .createServerConfiguration();
             saveChanges();
         }
