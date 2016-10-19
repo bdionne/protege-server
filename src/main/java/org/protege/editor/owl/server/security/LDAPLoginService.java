@@ -2,6 +2,8 @@ package org.protege.editor.owl.server.security;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.net.ssl.SSLContext;
+
 import org.protege.editor.owl.server.api.LoginService;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
 
@@ -39,8 +41,9 @@ public class LDAPLoginService implements LoginService {
     		String prefix = config.getProperty(LDAPPREFIX);
     		String suffix = config.getProperty(LDAPSUFFIX);
     		
+    		SSLContext ctx = new SSLContextFactory().createSslContext();    		
     		
-			LDAPConnection ldap = new LDAPConnection(host, port,
+			LDAPConnection ldap = new LDAPConnection(ctx.getSocketFactory(), host, port,
 					prefix + userid.get() + suffix, password.getPassword());
 			
 			//CN=fragosog,OU=Users,OU=NCI,OU=NIH,OU=AD,DC=nih,DC=gov
@@ -59,7 +62,7 @@ public class LDAPLoginService implements LoginService {
 				throw new ServerServiceException("Bad LDAP connection");
 				
 			}
-		} catch (LDAPException e1) {
+		} catch (LDAPException | SSLContextInitializationException e1) {
 			if (e1 instanceof LDAPBindException) {
 				LDAPBindException ex = (LDAPBindException) e1;
 				ex.getBindResult().getResultCode().intValue();
