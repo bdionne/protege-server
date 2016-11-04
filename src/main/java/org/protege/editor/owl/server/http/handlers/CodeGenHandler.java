@@ -71,9 +71,16 @@ public class CodeGenHandler extends BaseRoutingHandler {
 				String sseq = "0";
 				for (int j = 0; j < cnt; j++) {
 					sseq = (new Integer(seq++)).toString();
-					String code = p + d + sseq;
+					String code = "";
+					if (p != null) code += p;
+					if (d != null) code += d;
+					code += sseq;					
 					if (s != null) {
-						code = code + d + s;
+						if (d != null) {
+							code += d + s;
+						} else {
+							code += s;
+						}					
 					}
 					codes.add(code);
 				}
