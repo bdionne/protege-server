@@ -74,6 +74,9 @@
         "code_prop": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
         ],
+        "fully_qualified_syn": [
+        	"http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"
+        ],        	
         "deprecated_role": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#OLD_ROLE"
         ],
