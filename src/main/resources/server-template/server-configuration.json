@@ -504,6 +504,7 @@
   "properties": {
     "ldap_dn_prefix": "CN\u003d",
     "login_timeout_period": "1800000",
+    "autoupdate_interval": "60",
     "codegen_suffix": "S",
     "codegen_file": "gencode",
     "authenticate": "org.protege.editor.owl.server.security.DefaultLoginService",
