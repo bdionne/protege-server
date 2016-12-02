@@ -28,4 +28,5 @@ public class ServerEndpoints {
 
 	public static final String SERVER_RESTART = ROOT_PATH + "/server/restart";
 	public static final String SERVER_STOP = ROOT_PATH + "/server/stop";
+	public static final String SERVER_SHUTDOWN = ROOT_PATH + "/server/shutdown";
 }

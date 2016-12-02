@@ -175,6 +175,7 @@ public final class HTTPServer {
 		AuthenticationHandler serverHandler = new AuthenticationHandler(new BlockingHandler(new HTTPServerHandler()));
 		adminRouter.add("POST", SERVER_RESTART, serverHandler);
 		adminRouter.add("POST", SERVER_STOP, serverHandler);
+		adminRouter.add("POST", SERVER_SHUTDOWN, serverHandler);
 
 		
 		// Build the servers

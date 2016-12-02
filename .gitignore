@@ -15,4 +15,5 @@ release.properties
 usertok
 ~*
 samples/catalog-v001.xml
+samples/SmallBase.owl
 
