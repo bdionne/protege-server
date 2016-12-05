@@ -25,6 +25,7 @@ public class ServerEndpoints {
 	public static final String GEN_CODE = ROOT_PATH + "/gen_code";
 	public static final String GEN_CODES = ROOT_PATH + "/gen_codes";
 	public static final String EVS_REC = ROOT_PATH + "/evs_record";
+	public static final String CON_HISTORY_REC = ROOT_PATH + "/concept_history_record";
 
 	public static final String SERVER_RESTART = ROOT_PATH + "/server/restart";
 	public static final String SERVER_STOP = ROOT_PATH + "/server/stop";

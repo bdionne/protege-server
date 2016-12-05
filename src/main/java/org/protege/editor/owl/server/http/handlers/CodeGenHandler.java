@@ -17,12 +17,14 @@ import javax.annotation.Nonnull;
 import org.protege.editor.owl.server.http.ServerEndpoints;
 import static org.protege.editor.owl.server.http.ServerProperties.*;
 import org.protege.editor.owl.server.http.exception.ServerException;
-import org.protege.editor.owl.server.http.messages.EVSHistory;
+import org.protege.editor.owl.server.http.messages.History;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
+import io.undertow.util.Methods;
 import io.undertow.util.StatusCodes;
 
 public class CodeGenHandler extends BaseRoutingHandler {
@@ -54,6 +56,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	private void handlingRequest(HttpServerExchange exchange)
 			throws IOException, ClassNotFoundException, ServerException {
 		String requestPath = exchange.getRequestPath();
+		HttpString requestMethod = exchange.getRequestMethod();
 		if (requestPath.equals(ServerEndpoints.GEN_CODE)) {
 			int cnt = readCountParameter(exchange);
 			String p = serverConfiguration.getProperty(CODEGEN_PREFIX);
@@ -105,8 +108,13 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 		else if (requestPath.equals(ServerEndpoints.EVS_REC)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
-			EVSHistory hist = (EVSHistory) ois.readObject();
+			History hist = (History) ois.readObject();
 			recordEvsHistory(hist);
+		} else if (requestPath.equals(ServerEndpoints.CON_HISTORY_REC) 
+				&& requestMethod.equals(Methods.POST)) {
+			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
+			History hist = (History) ois.readObject();
+			recordConceptHistory(hist);
 		}
 	}
 
@@ -141,7 +149,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 
-	private void recordEvsHistory(EVSHistory hist) throws ServerException {
+	private void recordEvsHistory(History hist) throws ServerException {
 		try {
 			String hisfile = serverConfiguration.getProperty(EVS_HISTORY_FILE);
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
@@ -152,4 +160,17 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to record EVS history", e);
 		}
 	}
+	
+	private void recordConceptHistory(History hist) throws ServerException {
+		try {
+			String hisfile = serverConfiguration.getProperty(CON_HISTORY_FILE);
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
+			pw.println(hist.toRecord());
+			pw.close();
+		}
+		catch (IOException e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to record EVS history", e);
+		}
+	}
+	
 }
