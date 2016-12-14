@@ -21,11 +21,26 @@
       ],
       "all-projects": [
         "mp-admin"
+      ],
+      "d4d86431-35cd-4b13-8c6f-b169cc6685c7": [
+        "mp-project-manager"
+      ],
+      "549a7c9a-ad1c-47d2-944b-b067bf45607d": [
+        "mp-project-manager"
+      ],
+      "fee13cfc-d2d9-444b-8ec2-1d8caee12ab1": [
+        "mp-project-manager"
       ]
     },
     "alice": {
       "foo": [
         "0d4073aa-3790-4a6a-9941-76d02c765859",
+        "mp-workflow-modeler"
+      ],
+      "d4d86431-35cd-4b13-8c6f-b169cc6685c7": [
+        "mp-workflow-modeler"
+      ],
+      "fee13cfc-d2d9-444b-8ec2-1d8caee12ab1": [
         "mp-workflow-modeler"
       ]
     }
@@ -52,10 +67,127 @@
       "emailAddress": "bob"
     }
   ],
-  "projects": [
+  "projects": [    
     {
-      "id": "template",
-      "name": "template",
+      "id": "template by code",
+      "name": "SmallBaseByCode",
+      "description": "SmallBaseByCode",
+      "owner": "bob",
+      "options": {
+        "deprecated_child": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P201"
+        ],
+        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P97": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P378",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P379",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P380",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P381"
+        ],
+        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P211": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P388",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P389",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P390",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P391"
+        ],
+        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P375": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P393",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P394",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P395",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P396",
+          "http://www.w3.org/2000/01/rdf-schema#comment"
+        ],
+        "immutable_properties": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P200",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P201",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P202",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P204",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P310",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P327",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P328",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P364",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P365",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Split_From",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
+        ],
+        "preretired_root": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC50001"
+        ],
+        "editor_note": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P95"
+        ],
+        "split_from": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC4"
+        ],
+        "merge_target": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P328"
+        ],
+        "deprecated_in_assoc": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P365"
+        ],
+        "premerged_root": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC50000"
+        ],
+        "label_prop": [
+          "http://www.w3.org/2000/01/rdf-schema#label"
+        ],
+        "code_prop": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
+        ],
+        "deprecated_role": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P204"
+        ],
+        "retired_root": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C83485"
+        ],
+        "pref_name": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P108"
+        ],
+        "fully_qualified_syn": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90"
+        ],
+        "deprecated_assoc": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P364"
+        ],
+        "merge_source": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P327"
+        ],
+        "semantic_type": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P106"
+        ],
+        "deprecated_in_role": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P202"
+        ],
+        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P383",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P384",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P385",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P386"
+        ],
+        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P325": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P378",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P379",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P380",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P381"
+        ],
+        "deprecated_parent": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P200"
+        ],
+        "complex_properties": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P211",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P325",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P375",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P97"
+        ],
+        "design_note": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P98"
+        ]
+      }
+    },
+    
+    {
+      "id": "templateByName",
+      "name": "Small BaseByName",
       "description": "Use as template to clone thesaurus like ontology projects",
       "owner": "bob",
       "options": {
@@ -75,8 +207,8 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
         ],
         "fully_qualified_syn": [
-        	"http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"
-        ],        	
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"
+        ],
         "deprecated_role": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#OLD_ROLE"
         ],
@@ -504,13 +636,11 @@
   "properties": {
     "ldap_dn_prefix": "CN\u003d",
     "login_timeout_period": "1800000",
-    "autoupdate_interval": "60",
-    "codegen_suffix": "S",
     "codegen_file": "gencode",
     "authenticate": "org.protege.editor.owl.server.security.DefaultLoginService",
-    "codegen_delimeter": "-",
     "ldap_dn_suffix": ",OU\u003dUsers,OU\u003dNCI,OU\u003dNIH,OU\u003dAD,DC\u003dNih,DC\u003dGOV",
     "evshistory_file": "evs_history",
-    "codegen_prefix": "C"
+    "codegen_prefix": "C",
+    "autoupdate_interval": "60"
   }
 }
