@@ -20,7 +20,6 @@ public class History implements Serializable {
 	private enum HistoryType {EVS, CONCEPT};
 	
 	public History(String un, String c, String n, String op, String ref) {
-		type = HistoryType.CONCEPT;
 		user_name = un;
 		code = c;
 		name = n;
@@ -29,6 +28,7 @@ public class History implements Serializable {
 	}
 	
 	public History(String c, String op, String ref) {
+		type = HistoryType.CONCEPT;
 		code = c;
 		operation = op;
 		reference = ref;
