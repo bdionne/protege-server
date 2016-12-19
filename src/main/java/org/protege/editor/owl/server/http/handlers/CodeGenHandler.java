@@ -58,7 +58,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		String requestPath = exchange.getRequestPath();
 		HttpString requestMethod = exchange.getRequestMethod();
 		if (requestPath.equals(ServerEndpoints.GEN_CODE)) {
-			int cnt = readCountParameter(exchange);
+			int cnt = readIntParameter("count", exchange);
 			String p = serverConfiguration.getProperty(CODEGEN_PREFIX);
 			String s = serverConfiguration.getProperty(CODEGEN_SUFFIX);
 			String d = serverConfiguration.getProperty(CODEGEN_DELIMETER);
@@ -102,9 +102,12 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			catch (IOException e) {
 				internalServerErrorStatusCode(exchange, "Server failed to read code generator configuration", e);
 			}
-		}
-		else if (requestPath.equals(ServerEndpoints.GEN_CODES)) { 
-			// NO-OP
+		} 
+		else if (requestPath.equals(ServerEndpoints.SET_CODEGEN_SEQ) && requestMethod.equals(Methods.POST)) {
+			int seq = readIntParameter("seq", exchange);			
+			String cfn = serverConfiguration.getProperty(CODEGEN_FILE);
+			File codeGenFile = new File(cfn);
+			flushCode(codeGenFile, seq);			
 		}
 		else if (requestPath.equals(ServerEndpoints.EVS_REC)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
@@ -118,30 +121,30 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 
-	private int readCountParameter(HttpServerExchange exchange) {
-		int cnt = 1;
-		String scnt = "";
+	private int readIntParameter(String name, HttpServerExchange exchange) {
+		int res = 1;
+		String sres = "";
 		try {
-			scnt = getQueryParameter(exchange, "count");
-			cnt = Integer.parseInt(scnt);
+			sres = getQueryParameter(exchange, name);
+			res = Integer.parseInt(sres);
 		}
 		catch (ServerException e) {
 			// Ignore the exception but report it into the log
 			logger.warn(e.getLocalizedMessage());
-			logger.warn("... Using default value (count = " + cnt + ")");
+			logger.warn("... Using default value (" + name + " = " + res + ")");
 		}
 		catch (NumberFormatException e) {
 			// Ignore the exception but report it into the log
-			logger.warn("Unable to convert to number (count = " + scnt + ")");
-			logger.warn("... Using default value (count = " + cnt + ")");
+			logger.warn("Unable to convert to number (" + name + " = " + sres + ")");
+			logger.warn("... Using default value (" + name + " = " + res + ")");
 		}
-		return cnt;
+		return res;
 	}
 
 	private void flushCode(File codeGenFile, int seq) throws ServerException {
 		try {
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(codeGenFile)));
-			pw.println(seq + 1);
+			pw.println(seq);
 			pw.close();
 		}
 		catch (IOException e) {

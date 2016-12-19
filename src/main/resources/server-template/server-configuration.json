@@ -274,7 +274,8 @@
         "complex_properties": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#DEFINITION",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#ALT_DEFINITION"
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#ALT_DEFINITION",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#foo"
         ],
         "design_note": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#DesignNote"
