@@ -26,7 +26,7 @@ public class ServerEndpoints {
 	public static final String SET_CODEGEN_SEQ = ROOT_PATH + "/server/setcodegenseq";
 	
 	public static final String EVS_REC = ROOT_PATH + "/evs_record";
-	public static final String CON_HISTORY_REC = ROOT_PATH + "/concept_history_record";
+	public static final String GEN_CON_HIST = ROOT_PATH + "/gen_con_history";
 
 	public static final String SERVER_RESTART = ROOT_PATH + "/server/restart";
 	public static final String SERVER_STOP = ROOT_PATH + "/server/stop";

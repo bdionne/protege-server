@@ -10,7 +10,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -113,11 +115,9 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			History hist = (History) ois.readObject();
 			recordEvsHistory(hist);
-		} else if (requestPath.equals(ServerEndpoints.CON_HISTORY_REC) 
-				&& requestMethod.equals(Methods.POST)) {
-			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
-			History hist = (History) ois.readObject();
-			recordConceptHistory(hist);
+		} else if (requestPath.equals(ServerEndpoints.GEN_CON_HIST)) {
+			this.generateConceptHistory();
+			System.out.println("Write out con history file from evs history file");
 		}
 	}
 
@@ -156,7 +156,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		try {
 			String hisfile = serverConfiguration.getProperty(EVS_HISTORY_FILE);
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
-			pw.println(hist.toRecord());
+			pw.println(hist.toRecord(History.HistoryType.EVS));
 			pw.close();
 		}
 		catch (IOException e) {
@@ -164,16 +164,44 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 	
-	private void recordConceptHistory(History hist) throws ServerException {
+	private void generateConceptHistory() throws ServerException {
 		try {
-			String hisfile = serverConfiguration.getProperty(CON_HISTORY_FILE);
-			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
-			pw.println(hist.toRecord());
+			String evsfile = serverConfiguration.getProperty(EVS_HISTORY_FILE);
+			
+			Map<String, History> map = new HashMap<String, History>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
+			String s;
+			
+			String confile = serverConfiguration.getProperty(CON_HISTORY_FILE);
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(confile)));
+			
+			while ((s = reader.readLine()) != null) {
+				s = s.trim();
+				String[] tokens = s.split("\t");
+				History h = History.create(tokens);
+				if (h.getOp().equals("MODIFY")) {
+					map.put(h.getCode(), h);
+				} else {
+					pw.println(h.toRecord(History.HistoryType.CONCEPT));
+				}
+			}
+			
+			for (String c : map.keySet()) {
+				History hi = map.get(c);
+				pw.println(hi.toRecord(History.HistoryType.CONCEPT));
+				
+			}
+			
+			reader.close();			
 			pw.close();
 		}
-		catch (IOException e) {
-			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to record EVS history", e);
+		catch (Exception e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to generate concept history", e);
 		}
+		
 	}
+	
+	
 	
 }

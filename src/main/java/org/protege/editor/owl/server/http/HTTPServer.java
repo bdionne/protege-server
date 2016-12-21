@@ -157,6 +157,7 @@ public final class HTTPServer {
 		webRouter.add("GET", GEN_CODE, codeGenHandler);
 		webRouter.add("POST", SET_CODEGEN_SEQ, codeGenHandler);
 		webRouter.add("POST", EVS_REC, codeGenHandler);
+		webRouter.add("GET", GEN_CON_HIST, codeGenHandler);
 		
 		// create mataproject handler
 		HttpHandler metaprojectHandler = new AuthenticationHandler(new BlockingHandler(new MetaprojectHandler(pserver)));
