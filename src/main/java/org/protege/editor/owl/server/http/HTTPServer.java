@@ -2,8 +2,13 @@ package org.protege.editor.owl.server.http;
 
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.AuthToken;
+import edu.stanford.protege.metaproject.api.GlobalPermissions;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
+import edu.stanford.protege.metaproject.api.User;
 import edu.stanford.protege.metaproject.api.exception.ObjectConversionException;
+import edu.stanford.protege.metaproject.api.exception.UnknownRoleIdException;
+import edu.stanford.protege.metaproject.impl.RoleIdImpl;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -66,6 +71,29 @@ public final class HTTPServer {
 	private GracefulShutdownHandler adminRouterHandler;
 
 	private boolean isRunning = false;
+	
+	private boolean isPaused = false;
+	
+	public boolean isPaused() { return isPaused; }
+	
+	public void pause() {
+		isPaused = true;
+	}
+	
+	public void resume() {
+		isPaused = false;
+	}
+	
+	public boolean isWorkFlowManager(User user, ProjectId pid) {
+		try {
+			return serverConfiguration.getRoles(user.getId(), pid, 
+					GlobalPermissions.EXCLUDED).contains(serverConfiguration.getRole(new RoleIdImpl("mp-project-manager")));
+		} catch (UnknownRoleIdException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	private static HTTPServer server;
 
@@ -159,6 +187,7 @@ public final class HTTPServer {
 		webRouter.add("POST", EVS_REC, codeGenHandler);
 		webRouter.add("GET", GEN_CON_HIST, codeGenHandler);
 		
+		
 		// create mataproject handler
 		HttpHandler metaprojectHandler = new AuthenticationHandler(new BlockingHandler(new MetaprojectHandler(pserver)));
 		webRouter.add("GET", METAPROJECT, metaprojectHandler);
@@ -177,6 +206,9 @@ public final class HTTPServer {
 		adminRouter.add("POST", SERVER_RESTART, serverHandler);
 		adminRouter.add("POST", SERVER_STOP, serverHandler);
 		adminRouter.add("POST", SERVER_SHUTDOWN, serverHandler);
+		
+		webRouter.add("GET", SERVER_PAUSE, serverHandler);
+		webRouter.add("GET", SERVER_RESUME, serverHandler);
 
 		
 		// Build the servers

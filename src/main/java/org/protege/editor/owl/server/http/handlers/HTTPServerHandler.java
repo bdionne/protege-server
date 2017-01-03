@@ -44,6 +44,10 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 		}
 		else if (requestPath.equals(ServerEndpoints.SERVER_STOP) && requestMethod.equals(Methods.POST)) {
 			HTTPServer.server().stop();
+		} else if (requestPath.equals(ServerEndpoints.SERVER_PAUSE) && requestMethod.equals(Methods.GET)) {
+			HTTPServer.server().pause();
+		} else if (requestPath.equals(ServerEndpoints.SERVER_RESUME) && requestMethod.equals(Methods.GET)) {
+			HTTPServer.server().resume();
 		} else if (requestPath.equals(ServerEndpoints.SERVER_SHUTDOWN) && requestMethod.equals(Methods.POST)) {
 			HTTPServer.server().stop();
 			shutdownServer = true;

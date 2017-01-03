@@ -11,6 +11,7 @@ import org.protege.editor.owl.server.api.ServerLayer;
 import org.protege.editor.owl.server.api.exception.AuthorizationException;
 import org.protege.editor.owl.server.api.exception.OutOfSyncException;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
+import org.protege.editor.owl.server.http.HTTPServer;
 import org.protege.editor.owl.server.http.ServerEndpoints;
 import org.protege.editor.owl.server.http.exception.ServerException;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
@@ -20,6 +21,7 @@ import org.protege.editor.owl.server.versioning.api.HistoryFile;
 
 import edu.stanford.protege.metaproject.api.AuthToken;
 import edu.stanford.protege.metaproject.api.ProjectId;
+import edu.stanford.protege.metaproject.api.User;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 
@@ -58,6 +60,17 @@ public class HTTPChangeService extends BaseRoutingHandler {
 		if (requestPath.equals(ServerEndpoints.COMMIT)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			ProjectId pid = (ProjectId) ois.readObject();
+			if (HTTPServer.server().isPaused()) {
+				User user = (this.getAuthToken(exchange)).getUser();
+				if (HTTPServer.server().isWorkFlowManager(user, pid)) {
+					System.out.println("ok proceed");
+
+				} else {
+					throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, 
+							"Server in maintenance mode, please try later");
+				}
+
+			}
 			CommitBundle bundle = (CommitBundle) ois.readObject();
 			submitCommitBundle(getAuthToken(exchange), pid, bundle, exchange.getOutputStream());
 		}

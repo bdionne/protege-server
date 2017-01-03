@@ -82,7 +82,11 @@ public abstract class BaseRoutingHandler implements HttpHandler {
 	}
 
 	protected void handleServerException(HttpServerExchange exchange, ServerException e) {
-		logger.error(e.getCause().getMessage(), e.getCause());
+		if (e.getCause() != null) {
+			logger.error(e.getCause().getMessage(), e.getCause());
+		} else {
+			logger.error(e.getMessage());
+		}
 		exchange.setStatusCode(e.getErrorCode());
 		exchange.getResponseHeaders().add(new HttpString("Error-Message"), e.getMessage());
 	}
