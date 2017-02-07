@@ -5,6 +5,8 @@ import edu.stanford.protege.metaproject.api.*;
 import edu.stanford.protege.metaproject.api.exception.UnknownUserIdException;
 import edu.stanford.protege.metaproject.api.exception.UserNotRegisteredException;
 import edu.stanford.protege.metaproject.impl.AuthorizedUserToken;
+
+import org.protege.editor.owl.server.api.LoginService;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -63,6 +65,12 @@ public class DefaultLoginService implements SaltedChallengeLoginService {
 	@Override
 	public void setConfig(ServerConfiguration config) {
 		this.config = checkNotNull(config);
+		
+	}
+
+	@Override
+	public void setBackup(LoginService ls) {
+		// TODO Auto-generated method stub
 		
 	}
 }

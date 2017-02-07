@@ -26,13 +26,17 @@ public class LDAPLoginService implements LoginService {
     private static final String LDAPPORT = "ldap_port";
     private static final String LDAPPREFIX = "ldap_dn_prefix";
     private static final String LDAPSUFFIX = "ldap_dn_suffix";
+    
+    private LoginService backup = null;
+    
+    public void setBackup(LoginService ls) { this.backup = ls; }
    
     public LDAPLoginService() {}   
 
     @Override
     public AuthToken login(UserId userid, Password password) throws ServerServiceException {
     	
-    	// TODO: implements logic based on specs from NCI, TBD
+    	AuthToken result = null;
     	
     	try {
     		String host = config.getProperty(LDAPHOST);
@@ -53,23 +57,31 @@ public class LDAPLoginService implements LoginService {
 			
 			if (ldap.isConnected()) {
 				try {
-					return new AuthorizedUserToken(config.getUser(userid));
+					result = new AuthorizedUserToken(config.getUser(userid));
 				} catch (UnknownUserIdException e) {
 					throw new ServerServiceException("Invalid user id", e);					
 				}
 				
 			} else {
-				throw new ServerServiceException("Bad LDAP connection");
-				
+				if (backup != null) {
+					result = backup.login(userid, password);
+					
+				}				
 			}
-		} catch (LDAPException | SSLContextInitializationException e1) {
-			if (e1 instanceof LDAPBindException) {
-				LDAPBindException ex = (LDAPBindException) e1;
-				ex.getBindResult().getResultCode().intValue();
-				throw new ServerServiceException("Issue with LDAP " + ex.getBindResult().getResultString(), ex);
-			}
-			throw new ServerServiceException("Issue with LDAP ",e1);		
-		} 	
+    	} catch (LDAPException | SSLContextInitializationException e1) {
+    		if (backup != null) {
+    			result = backup.login(userid, password);
+
+    		} else {
+    			if (e1 instanceof LDAPBindException) {
+    				LDAPBindException ex = (LDAPBindException) e1;
+    				ex.getBindResult().getResultCode().intValue();
+    				throw new ServerServiceException("Issue with LDAP " + ex.getBindResult().getResultString(), ex);
+    			}
+    			throw new ServerServiceException("Issue with LDAP ",e1);
+    		}
+    	} 
+    	return result;
     }
 
 	@Override

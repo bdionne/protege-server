@@ -18,4 +18,6 @@ public interface LoginService {
     AuthToken login(UserId username, Password password) throws ServerServiceException;
     
     void setConfig(ServerConfiguration config);
+    
+    void setBackup(LoginService ls);
 }

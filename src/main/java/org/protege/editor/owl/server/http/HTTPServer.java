@@ -160,14 +160,19 @@ public final class HTTPServer {
 		RoutingHandler webRouter = Handlers.routing();
 		RoutingHandler adminRouter = Handlers.routing();
 		
+		// use default login service for admin web server
+	    LoginService adminLoginService = new DefaultLoginService();
+		
 		// create login handler for web server
 		LoginService loginService = instantiateLoginService();
+		
+		loginService.setBackup(adminLoginService);
+		
 		HttpHandler login_handler = new BlockingHandler(new HTTPLoginService(loginService));
 		
 		webRouter.add("POST", LOGIN, login_handler);
 		
-		// use default login service for admin web server
-		LoginService adminLoginService = new DefaultLoginService();
+		
 		adminLoginService.setConfig(serverConfiguration);
 		HttpHandler admin_login_handler = new BlockingHandler(new HTTPLoginService(adminLoginService));
 		

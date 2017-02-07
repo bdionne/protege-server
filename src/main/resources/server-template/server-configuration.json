@@ -231,6 +231,8 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Merge_Source",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Merge_Target",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Split_From",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Review_Date",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Reviewer_Name",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
         ],
         "preretired_root": [
