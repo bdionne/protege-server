@@ -31,6 +31,7 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 
 		
 		if (shutdownServer) {
+			HTTPServer.server().stop();
 			logger.info("Server shut down gracefully");
 			System.exit(0);					
 		}
@@ -49,7 +50,6 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 		} else if (requestPath.equals(ServerEndpoints.SERVER_RESUME) && requestMethod.equals(Methods.GET)) {
 			HTTPServer.server().resume();
 		} else if (requestPath.equals(ServerEndpoints.SERVER_SHUTDOWN) && requestMethod.equals(Methods.POST)) {
-			HTTPServer.server().stop();
 			shutdownServer = true;
 		}
 	}
