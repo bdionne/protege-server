@@ -182,13 +182,13 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P201"
         ],
         "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P97": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Review_Date",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Reviewer_Name",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P378",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P379",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P380",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P381"
         ],
         "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P211": [
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P388",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P387",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P389",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P390",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P391"
@@ -201,6 +201,8 @@
           "http://www.w3.org/2000/01/rdf-schema#comment"
         ],
         "immutable_properties": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC0",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC4",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P200",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P201",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P202",
@@ -209,9 +211,7 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P327",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P328",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P364",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P365",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Split_From",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P365"
         ],
         "preretired_root": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC50001"
@@ -219,14 +219,26 @@
         "editor_note": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P95"
         ],
+        "required": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#required"
+        ],
+        "default": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#default"
+        ],
         "split_from": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC4"
+        ],
+        "retired_concepts_root": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C28428"
         ],
         "merge_target": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P328"
         ],
         "deprecated_in_assoc": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P365"
+        ],
+        "fully_qualified_syn": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90"
         ],
         "premerged_root": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC50000"
@@ -235,7 +247,7 @@
           "http://www.w3.org/2000/01/rdf-schema#label"
         ],
         "code_prop": [
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#code"
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#NHC0"
         ],
         "deprecated_role": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P204"
@@ -243,14 +255,8 @@
         "retired_root": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C83485"
         ],
-        "retired_concepts_root": [
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C28428"
-        ],
         "pref_name": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P108"
-        ],
-        "fully_qualified_syn": [
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90"
         ],
         "deprecated_assoc": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P364"
@@ -265,15 +271,15 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P202"
         ],
         "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P90": [
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P383",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P384",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P385",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P386"
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P386",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#term-group",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#term-source"
         ],
         "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P325": [
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Review_Date",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Definition_Reviewer_Name",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P378",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P379",
-          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P380",
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P381"
         ],
         "deprecated_parent": [
@@ -290,6 +296,7 @@
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#P98"
         ]
       }
+      
     }
   ],
   "roles": [
