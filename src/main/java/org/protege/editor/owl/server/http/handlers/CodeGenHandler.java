@@ -64,7 +64,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			String p = serverConfiguration.getProperty(CODEGEN_PREFIX);
 			String s = serverConfiguration.getProperty(CODEGEN_SUFFIX);
 			String d = serverConfiguration.getProperty(CODEGEN_DELIMETER);
-			String cfn = serverConfiguration.getProperty(CODEGEN_FILE);
+			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
 			int seq = 0;
 			try {
 				File codeGenFile = new File(cfn);
@@ -107,7 +107,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		} 
 		else if (requestPath.equals(ServerEndpoints.SET_CODEGEN_SEQ) && requestMethod.equals(Methods.POST)) {
 			int seq = readIntParameter("seq", exchange);			
-			String cfn = serverConfiguration.getProperty(CODEGEN_FILE);
+			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
 			File codeGenFile = new File(cfn);
 			flushCode(codeGenFile, seq);			
 		}
@@ -154,7 +154,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 
 	private void recordEvsHistory(History hist) throws ServerException {
 		try {
-			String hisfile = serverConfiguration.getProperty(EVS_HISTORY_FILE);
+			String hisfile = addRoot(serverConfiguration.getProperty(EVS_HISTORY_FILE));
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
 			pw.println(hist.toRecord(History.HistoryType.EVS));
 			pw.close();
@@ -166,14 +166,14 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	
 	private void generateConceptHistory() throws ServerException {
 		try {
-			String evsfile = serverConfiguration.getProperty(EVS_HISTORY_FILE);
+			String evsfile = addRoot(serverConfiguration.getProperty(EVS_HISTORY_FILE));
 			
 			Map<String, History> map = new HashMap<String, History>();
 			
 			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
 			String s;
 			
-			String confile = serverConfiguration.getProperty(CON_HISTORY_FILE);
+			String confile = addRoot(serverConfiguration.getProperty(CON_HISTORY_FILE));
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(confile)));
 			
 			while ((s = reader.readLine()) != null) {
@@ -200,8 +200,10 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to generate concept history", e);
 		}
 		
+	}	
+	
+	private String addRoot(String s) {
+		return serverConfiguration.getServerRoot() + "/" + s;
 	}
-	
-	
 	
 }

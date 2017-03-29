@@ -16,6 +16,8 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.GracefulShutdownHandler;
+import io.undertow.server.handlers.resource.PathResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.StatusCodes;
 import org.protege.editor.owl.server.api.ChangeService;
 import org.protege.editor.owl.server.api.ServerLayer;
@@ -45,6 +47,7 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.nio.file.Paths;
 
 import static org.protege.editor.owl.server.http.ServerEndpoints.*;
 import static org.protege.editor.owl.server.http.ServerProperties.*;
@@ -205,6 +208,15 @@ public final class HTTPServer {
 		adminRouter.add("POST", PROJECT,  metaprojectHandler);
 		adminRouter.add("POST", PROJECT_SNAPSHOT,  metaprojectHandler);
 		adminRouter.add("DELETE", PROJECT,  metaprojectHandler);
+		
+		ResourceHandler rh = Handlers.resource(
+				new PathResourceManager(Paths.get(serverConfiguration.getServerRoot()), 100, false, null))
+				.setDirectoryListingEnabled(false);
+		
+		HttpHandler arh = new AuthenticationHandler(rh);
+		
+		adminRouter.add("GET", serverConfiguration.getProperty(CON_HISTORY_FILE), arh);
+   
 		
 		// create server handler
 		AuthenticationHandler serverHandler = new AuthenticationHandler(new BlockingHandler(new HTTPServerHandler()));
