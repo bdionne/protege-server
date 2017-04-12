@@ -25,4 +25,11 @@ public class CodeGenHandlerTest {
                                               "p_14_s");
         assertThat(codes, is(expected));
     }
+
+    @Test
+    public void generateTokensNulls() {
+        List<String> codes = CodeGenHandler.generateCodes(9, 3, "C", null, null);
+        List<String> expected = Arrays.asList("C9", "C10", "C11");
+        assertThat(codes, is(expected));
+    }
 }
