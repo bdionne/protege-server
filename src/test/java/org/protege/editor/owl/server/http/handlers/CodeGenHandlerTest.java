@@ -1,11 +1,9 @@
 package org.protege.editor.owl.server.handlers;
 
-import junit.framework.TestCase;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
 import org.protege.editor.owl.server.http.handlers.CodeGenHandler;
 
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-public class CodeGenHandlerTest extends TestCase {
+public class CodeGenHandlerTest {
 
     @Test
     public void generateNTokens() {
