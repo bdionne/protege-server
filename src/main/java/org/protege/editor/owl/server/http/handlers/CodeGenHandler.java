@@ -55,8 +55,30 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 
+	public static List<String> generateCodes(int seq, int cnt, String p, String s, String d) {
+		List<String> codes = new ArrayList<String>();
+		String sseq = "0";
+		for (int j = 0; j < cnt; j++) {
+			sseq = (new Integer(seq++)).toString();
+			String code = "";
+			if (p != null) code += p;
+			if (d != null) code += d;
+			code += sseq;
+			if (s != null) {
+				if (d != null) {
+					code += d + s;
+				} else {
+					code += s;
+				}
+			}
+			codes.add(code);
+		}
+		assert codes.size() == cnt;
+		return codes;
+	}
+
 	private void handlingRequest(HttpServerExchange exchange)
-			throws IOException, ClassNotFoundException, ServerException {
+		throws IOException, ClassNotFoundException, ServerException {
 		String requestPath = exchange.getRequestPath();
 		HttpString requestMethod = exchange.getRequestMethod();
 		if (requestPath.equals(ServerEndpoints.GEN_CODE)) {
@@ -65,33 +87,16 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			String s = serverConfiguration.getProperty(CODEGEN_SUFFIX);
 			String d = serverConfiguration.getProperty(CODEGEN_DELIMETER);
 			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
-			int seq = 0;
 			try {
 				File codeGenFile = new File(cfn);
 				FileReader fileReader = new FileReader(codeGenFile);
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
-				seq = Integer.parseInt(bufferedReader.readLine().trim());
-				
-				List<String> codes = new ArrayList<String>();
-				String sseq = "0";
-				for (int j = 0; j < cnt; j++) {
-					sseq = (new Integer(seq++)).toString();
-					String code = "";
-					if (p != null) code += p;
-					if (d != null) code += d;
-					code += sseq;					
-					if (s != null) {
-						if (d != null) {
-							code += d + s;
-						} else {
-							code += s;
-						}					
-					}
-					codes.add(code);
-				}
+				int seq = Integer.parseInt(bufferedReader.readLine().trim());
+				List<String> codes = generateCodes(seq, cnt, p, s, d);
+				seq += cnt;
 				ObjectOutputStream os = new ObjectOutputStream(exchange.getOutputStream());
 				os.writeObject(codes);
-				
+
 				try {
 					fileReader.close();
 				}
@@ -104,12 +109,12 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			catch (IOException e) {
 				internalServerErrorStatusCode(exchange, "Server failed to read code generator configuration", e);
 			}
-		} 
+		}
 		else if (requestPath.equals(ServerEndpoints.SET_CODEGEN_SEQ) && requestMethod.equals(Methods.POST)) {
-			int seq = readIntParameter("seq", exchange);			
+			int seq = readIntParameter("seq", exchange);
 			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
 			File codeGenFile = new File(cfn);
-			flushCode(codeGenFile, seq);			
+			flushCode(codeGenFile, seq);
 		}
 		else if (requestPath.equals(ServerEndpoints.EVS_REC)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
