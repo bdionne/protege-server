@@ -142,6 +142,19 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 			ServerConfiguration cfg = serl.parse(new InputStreamReader(exchange.getInputStream()), ServerConfiguration.class);
 			updateMetaproject(cfg);
 			requiredRestarting = true;
+		} else if (requestPath.equals(ServerEndpoints.PROJECTS_UNCLASSIFIED) && requestMethod.equals(Methods.GET)) {
+        retrieveProjectsUnclassified(exchange);
+    }
+	}
+
+
+	public void retrieveProjectsUnclassified(HttpServerExchange exchange) throws ServerException {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(exchange.getOutputStream());
+			List<Project> projects = new ArrayList<>();
+			oos.writeObject(projects);
+		} catch (IOException e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to transmit returned data", e);
 		}
 	}
 
