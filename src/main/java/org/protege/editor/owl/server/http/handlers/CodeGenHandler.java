@@ -83,10 +83,14 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		HttpString requestMethod = exchange.getRequestMethod();
 		if (requestPath.equals(ServerEndpoints.GEN_CODE)) {
 			int cnt = readIntParameter("count", exchange);
+
+			// TODO: handle failure and remove literal
+			String projectID = getQueryParameter(exchange, "projectid");
 			String p = serverConfiguration.getProperty(CODEGEN_PREFIX);
 			String s = serverConfiguration.getProperty(CODEGEN_SUFFIX);
 			String d = serverConfiguration.getProperty(CODEGEN_DELIMETER);
-			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
+			String cfn = addRoot(projectID + File.separator
+				+ serverConfiguration.getProperty(CODEGEN_FILE));
 			try {
 				File codeGenFile = new File(cfn);
 				FileReader fileReader = new FileReader(codeGenFile);
@@ -112,7 +116,9 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 		else if (requestPath.equals(ServerEndpoints.SET_CODEGEN_SEQ) && requestMethod.equals(Methods.POST)) {
 			int seq = readIntParameter("seq", exchange);
-			String cfn = addRoot(serverConfiguration.getProperty(CODEGEN_FILE));
+			String projectID = getQueryParameter(exchange, "projectid");
+			String cfn = addRoot(projectID + File.separator
+					+ serverConfiguration.getProperty(CODEGEN_FILE));
 			File codeGenFile = new File(cfn);
 			flushCode(codeGenFile, seq);
 		}

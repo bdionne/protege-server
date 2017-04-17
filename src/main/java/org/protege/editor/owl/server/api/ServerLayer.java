@@ -1,7 +1,9 @@
 package org.protege.editor.owl.server.api;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,13 @@ public abstract class ServerLayer implements Server {
         String filename = projectName.replaceAll("\\s+","_"); // to snake-case
         return HistoryFile.createNew(rootDir, filename);
     }
-    
+
+    public void createCodegenFile(String projectId) throws IOException {
+        String rootDir = getConfiguration().getServerRoot() + File.separator + projectId;
+        String filename = rootDir + File.separator + "gencode"; // TODO: remove this constant
+        OutputStream os = new FileOutputStream(filename);
+        os.write("1000".getBytes()); // TODO: remove this constant
+    }
     
     public String  getHistoryFilePath(Project proj) throws IOException {
     	
