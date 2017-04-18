@@ -81,11 +81,13 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		throws IOException, ClassNotFoundException, ServerException {
 		String requestPath = exchange.getRequestPath();
 		HttpString requestMethod = exchange.getRequestMethod();
+
+		// TODO: handle failure and remove literal
+		String projectID = getQueryParameter(exchange, "projectid");
+
 		if (requestPath.equals(ServerEndpoints.GEN_CODE)) {
 			int cnt = readIntParameter("count", exchange);
 
-			// TODO: handle failure and remove literal
-			String projectID = getQueryParameter(exchange, "projectid");
 			String p = serverConfiguration.getProperty(CODEGEN_PREFIX);
 			String s = serverConfiguration.getProperty(CODEGEN_SUFFIX);
 			String d = serverConfiguration.getProperty(CODEGEN_DELIMETER);
@@ -116,7 +118,6 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 		else if (requestPath.equals(ServerEndpoints.SET_CODEGEN_SEQ) && requestMethod.equals(Methods.POST)) {
 			int seq = readIntParameter("seq", exchange);
-			String projectID = getQueryParameter(exchange, "projectid");
 			String cfn = addRoot(projectID + File.separator
 					+ serverConfiguration.getProperty(CODEGEN_FILE));
 			File codeGenFile = new File(cfn);
@@ -125,9 +126,9 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		else if (requestPath.equals(ServerEndpoints.EVS_REC)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			History hist = (History) ois.readObject();
-			recordEvsHistory(hist);
+			recordEvsHistory(hist, projectID);
 		} else if (requestPath.equals(ServerEndpoints.GEN_CON_HIST)) {
-			this.generateConceptHistory();
+			this.generateConceptHistory(projectID);
 			System.out.println("Write out con history file from evs history file");
 		}
 	}
@@ -163,9 +164,10 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 
-	private void recordEvsHistory(History hist) throws ServerException {
+	private void recordEvsHistory(History hist, String projectId) throws ServerException {
 		try {
-			String hisfile = addRoot(serverConfiguration.getProperty(EVS_HISTORY_FILE));
+			String hisfile = addRoot(projectId + File.separator
+					+ serverConfiguration.getProperty(EVS_HISTORY_FILE));
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(hisfile, true)));
 			pw.println(hist.toRecord(History.HistoryType.EVS));
 			pw.close();
@@ -175,16 +177,18 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 	
-	private void generateConceptHistory() throws ServerException {
+	private void generateConceptHistory(String projectId) throws ServerException {
 		try {
-			String evsfile = addRoot(serverConfiguration.getProperty(EVS_HISTORY_FILE));
+			String evsfile = addRoot(projectId + File.separator
+					+ serverConfiguration.getProperty(EVS_HISTORY_FILE));
 			
 			Map<String, History> map = new HashMap<String, History>();
 			
 			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
 			String s;
 			
-			String confile = addRoot(serverConfiguration.getProperty(CON_HISTORY_FILE));
+			String confile = addRoot(projectId + File.separator
+					+ serverConfiguration.getProperty(CON_HISTORY_FILE));
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(confile)));
 			
 			while ((s = reader.readLine()) != null) {
