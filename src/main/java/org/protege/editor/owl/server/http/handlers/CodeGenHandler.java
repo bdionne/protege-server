@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -179,18 +182,17 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	
 	private void generateConceptHistory(String projectId) throws ServerException {
 		try {
-			String evsfile = addRoot(projectId + File.separator
-					+ serverConfiguration.getProperty(EVS_HISTORY_FILE));
-			
+			String projectDir = addRoot(projectId + File.separator);
+			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);
+			String conName = serverConfiguration.getProperty(CON_HISTORY_FILE);
+			String evsfile = projectDir + evsName;
+			String confile = projectDir + conName;
+
 			Map<String, History> map = new HashMap<String, History>();
-			
 			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
 			String s;
 			
-			String confile = addRoot(projectId + File.separator
-					+ serverConfiguration.getProperty(CON_HISTORY_FILE));
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(confile)));
-			
 			while ((s = reader.readLine()) != null) {
 				s = s.trim();
 				String[] tokens = s.split("\t");
@@ -210,6 +212,17 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			
 			reader.close();			
 			pw.close();
+
+			String archiveDir = serverConfiguration.getProperty(ARCHIVE_ROOT)
+					+ File.separator
+					+ projectId
+					+ File.separator
+					+ LocalDateTime.now()
+					+ File.separator;
+
+			Files.createDirectories(Paths.get(archiveDir));
+			Files.move(Paths.get(evsfile), Paths.get(archiveDir + evsName));
+			Files.move(Paths.get(confile), Paths.get(archiveDir + conName));
 		}
 		catch (Exception e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to generate concept history", e);

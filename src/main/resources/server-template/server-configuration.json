@@ -658,6 +658,7 @@
     "codegen_prefix": "C",
     "ldap_host": "localhost",
     "autoupdate_interval": "60",
-    "conhistory_file": "con_history"
+    "conhistory_file": "con_history",
+    "root-archive": "root/archive"
   }
 }

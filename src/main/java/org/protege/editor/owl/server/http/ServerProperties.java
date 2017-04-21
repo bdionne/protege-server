@@ -21,6 +21,7 @@ public final class ServerProperties {
      */
     public static final String EVS_HISTORY_FILE = "evshistory_file";
     public static final String CON_HISTORY_FILE = "conhistory_file";
+    public static final String ARCHIVE_ROOT = "root-archive";
 
     /*
      * Constants for Authentication module
