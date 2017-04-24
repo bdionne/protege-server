@@ -1,5 +1,6 @@
 package org.protege.editor.owl.server.base;
 
+import com.google.common.base.Strings;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.*;
 import edu.stanford.protege.metaproject.api.exception.*;
@@ -699,6 +700,9 @@ public class ProtegeServer extends ServerLayer {
     private void saveChanges() throws ServerServiceException {
         try {
             String configLocation = System.getProperty(HTTPServer.SERVER_CONFIGURATION_PROPERTY);
+            if (Strings.isNullOrEmpty(configLocation)) {
+            	throw new RuntimeException("Config property " + HTTPServer.SERVER_CONFIGURATION_PROPERTY + " isn't set");
+						}
             File configurationFile = new File(configLocation);
             ConfigurationManager.getConfigurationWriter().saveConfiguration(configuration, configurationFile);
         }
