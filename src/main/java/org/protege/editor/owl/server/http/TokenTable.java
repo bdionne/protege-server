@@ -37,9 +37,16 @@ public class TokenTable {
 				.expireAfterAccess(timeout, TimeUnit.MILLISECONDS)
 				.removalListener(new RemovalListener<String, AuthToken>() {
 					public void onRemoval(RemovalNotification<String, AuthToken> notification) {
+						String uid = "";
+						String unam = "";
+						if (notification.getValue().getUser().getId() != null) {
+							uid = notification.getValue().getUser().getId().get();
+						}
+						if (notification.getValue().getUser().getName() != null) {
+							unam = notification.getValue().getUser().getName().get();
+						}
 						logger.info(String.format("Unregister %s (%s) from the server due to inactivity",
-								notification.getValue().getUser().getId().get(),
-								notification.getValue().getUser().getName().get()));
+								uid, unam));
 					}
 				})
 				.build(
