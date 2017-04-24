@@ -13,6 +13,8 @@ import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import edu.stanford.protege.metaproject.api.User;
 
+import static org.protege.editor.owl.server.http.ServerProperties.CODEGEN_FILE;
+
 public abstract class ServerLayer implements Server {
 
     private List<ServerListener> listeners = new ArrayList<>();
@@ -54,9 +56,9 @@ public abstract class ServerLayer implements Server {
 
     public void createCodegenFile(String projectId) throws IOException {
         String rootDir = getConfiguration().getServerRoot() + File.separator + projectId;
-        String filename = rootDir + File.separator + "gencode"; // TODO: remove this constant
+        String filename = rootDir + File.separator + getConfiguration().getProperty(CODEGEN_FILE);
         OutputStream os = new FileOutputStream(filename);
-        os.write("1000".getBytes()); // TODO: remove this constant
+        os.write("1000".getBytes());
     }
     
     public String  getHistoryFilePath(Project proj) throws IOException {
