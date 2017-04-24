@@ -1,17 +1,12 @@
 package org.protege.editor.owl.server.http.handlers;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.protege.editor.owl.server.http.handlers.CodeGenHandler;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
 
 public class CodeGenHandlerTest {
 
