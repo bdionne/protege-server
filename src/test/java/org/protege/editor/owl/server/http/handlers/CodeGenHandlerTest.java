@@ -1,4 +1,4 @@
-package org.protege.editor.owl.server.handlers;
+package org.protege.editor.owl.server.http.handlers;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
