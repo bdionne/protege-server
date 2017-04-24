@@ -140,6 +140,7 @@ public class ProtegeServer extends ServerLayer {
             throws AuthorizationException, ServerServiceException {
         try {
             HistoryFile historyFile = createHistoryFile(projectId.get(), projectName.get());
+            createCodegenFile(projectId.get());
             Project newProject = factory.getProject(
                     projectId, projectName, description, owner, options);
             try {

@@ -655,9 +655,11 @@
     "ldap_port": "636",
     "ldap_dn_suffix": ",OU\u003dUsers,OU\u003dNCI,OU\u003dNIH,OU\u003dAD,DC\u003dNih,DC\u003dGOV",
     "evshistory_file": "evs_history",
+    "current_evshistory_file": "current_evs_history",
     "codegen_prefix": "C",
     "ldap_host": "localhost",
     "autoupdate_interval": "60",
-    "conhistory_file": "con_history"
+    "conhistory_file": "con_history",
+    "root_archive": "root/archive"
   }
 }

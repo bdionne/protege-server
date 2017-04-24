@@ -1,7 +1,9 @@
 package org.protege.editor.owl.server.api;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,8 @@ import org.protege.editor.owl.server.versioning.api.HistoryFile;
 import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import edu.stanford.protege.metaproject.api.User;
+
+import static org.protege.editor.owl.server.http.ServerProperties.CODEGEN_FILE;
 
 public abstract class ServerLayer implements Server {
 
@@ -49,7 +53,13 @@ public abstract class ServerLayer implements Server {
         String filename = projectName.replaceAll("\\s+","_"); // to snake-case
         return HistoryFile.createNew(rootDir, filename);
     }
-    
+
+    public void createCodegenFile(String projectId) throws IOException {
+        String rootDir = getConfiguration().getServerRoot() + File.separator + projectId;
+        String filename = rootDir + File.separator + getConfiguration().getProperty(CODEGEN_FILE);
+        OutputStream os = new FileOutputStream(filename);
+        os.write("1000".getBytes());
+    }
     
     public String  getHistoryFilePath(Project proj) throws IOException {
     	
