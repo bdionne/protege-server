@@ -19,9 +19,10 @@ public final class ServerProperties {
     /*
      * Constants for EVS History module
      */
+    public static final String CUR_EVS_HISTORY_FILE = "current_evshistory_file";
     public static final String EVS_HISTORY_FILE = "evshistory_file";
     public static final String CON_HISTORY_FILE = "conhistory_file";
-    public static final String ARCHIVE_ROOT = "root-archive";
+    public static final String ARCHIVE_ROOT = "root_archive";
 
     /*
      * Constants for Authentication module
