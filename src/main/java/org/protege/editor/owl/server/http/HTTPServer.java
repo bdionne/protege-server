@@ -273,19 +273,20 @@ public final class HTTPServer {
 		isRunning = true;
 	}
 
+	@Nonnull
 	private LoginService instantiateLoginService() throws ServerException {
 		String authClassName = serverConfiguration.getProperty(AUTHENTICATION_CLASS);
-		LoginService service = null;
-		if (authClassName != null) {
-			try {
-				service = (LoginService) Class.forName(authClassName).newInstance();
-				service.setConfig(serverConfiguration);
-				
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, e.getMessage());
-			}
+		if (authClassName == null) {
+			throw new RuntimeException("Failed to initialize LoginService. " + AUTHENTICATION_CLASS + " property not set");
 		}
-		return service;
+		try {
+			LoginService service = (LoginService) Class.forName(authClassName).newInstance();
+			service.setConfig(serverConfiguration);
+			return service;
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
 	}
 
 	private TokenTable createLoginTokenTable() {
