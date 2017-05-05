@@ -140,7 +140,7 @@ public class ProtegeServer extends ServerLayer {
             Description description, UserId owner, Optional<ProjectOptions> options)
             throws AuthorizationException, ServerServiceException {
         try {
-            HistoryFile historyFile = createHistoryFile(projectId.get(), projectName.get());
+            HistoryFile historyFile = createHistoryFile(projectId);
             createCodegenFile(projectId.get());
             Project newProject = factory.getProject(
                     projectId, projectName, description, owner, options);
@@ -194,7 +194,7 @@ public class ProtegeServer extends ServerLayer {
                     .removePolicy(projectId)
                     .createServerConfiguration();
             if (includeFile) {
-                String projectFilePath = getHistoryFilePath(project);
+                String projectFilePath = getHistoryFilePath(projectId);
                 HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
                 File projectDir = historyFile.getParentFile();
                 FileUtils.deleteDirectory(projectDir);
@@ -243,7 +243,7 @@ public class ProtegeServer extends ServerLayer {
             logger.info(printLog(token.getUser(), "Open project", project.toString()));
             final URI serverAddress = configuration.getHost().getUri();
             final Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
-            final String path = getHistoryFilePath(project);
+            final String path = getHistoryFilePath(projectId);
             if (registryPort.isPresent()) {
                 Port port = registryPort.get();
                 return new ServerDocument(serverAddress, port.get(), HistoryFile.openExisting(path));
@@ -260,12 +260,7 @@ public class ProtegeServer extends ServerLayer {
             String message = "Unable to access history file in remote server";
             logger.error(printLog(token.getUser(), "Open project", message), e);
             throw new ServerServiceException(message, e);
-        } catch (IOException e) {
-        	String message = "Failed to find history file in remote server";
-            logger.error(printLog(token.getUser(), "Add project", message));
-            throw new ServerServiceException(message, e);
-			
-		}
+        }
         finally {
             readLock.unlock();
         }

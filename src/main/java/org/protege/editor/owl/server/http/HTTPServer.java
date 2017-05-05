@@ -1,11 +1,7 @@
 package org.protege.editor.owl.server.http;
 
 import edu.stanford.protege.metaproject.ConfigurationManager;
-import edu.stanford.protege.metaproject.api.AuthToken;
-import edu.stanford.protege.metaproject.api.GlobalPermissions;
-import edu.stanford.protege.metaproject.api.ProjectId;
-import edu.stanford.protege.metaproject.api.ServerConfiguration;
-import edu.stanford.protege.metaproject.api.User;
+import edu.stanford.protege.metaproject.api.*;
 import edu.stanford.protege.metaproject.api.exception.ObjectConversionException;
 import edu.stanford.protege.metaproject.api.exception.UnknownRoleIdException;
 import edu.stanford.protege.metaproject.impl.RoleIdImpl;
@@ -20,8 +16,8 @@ import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.StatusCodes;
 import org.protege.editor.owl.server.api.ChangeService;
-import org.protege.editor.owl.server.api.ServerLayer;
 import org.protege.editor.owl.server.api.LoginService;
+import org.protege.editor.owl.server.api.ServerLayer;
 import org.protege.editor.owl.server.base.ProtegeServer;
 import org.protege.editor.owl.server.change.ChangeDocumentPool;
 import org.protege.editor.owl.server.change.ChangeManagementFilter;
@@ -29,12 +25,7 @@ import org.protege.editor.owl.server.change.DefaultChangeService;
 import org.protege.editor.owl.server.conflict.ConflictDetectionFilter;
 import org.protege.editor.owl.server.http.exception.ServerConfigurationInitializationException;
 import org.protege.editor.owl.server.http.exception.ServerException;
-import org.protege.editor.owl.server.http.handlers.AuthenticationHandler;
-import org.protege.editor.owl.server.http.handlers.CodeGenHandler;
-import org.protege.editor.owl.server.http.handlers.HTTPChangeService;
-import org.protege.editor.owl.server.http.handlers.HTTPLoginService;
-import org.protege.editor.owl.server.http.handlers.HTTPServerHandler;
-import org.protege.editor.owl.server.http.handlers.MetaprojectHandler;
+import org.protege.editor.owl.server.http.handlers.*;
 import org.protege.editor.owl.server.policy.AccessControlFilter;
 import org.protege.editor.owl.server.security.DefaultLoginService;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
@@ -48,6 +39,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static org.protege.editor.owl.server.http.ServerEndpoints.*;
 import static org.protege.editor.owl.server.http.ServerProperties.*;
@@ -75,16 +67,32 @@ public final class HTTPServer {
 
 	private boolean isRunning = false;
 	
-	private boolean isPaused = false;
+	private Optional<User> pausedUser = Optional.empty();
 	
-	public boolean isPaused() { return isPaused; }
-	
-	public void pause() {
-		isPaused = true;
+	public boolean isPaused() { return pausedUser.isPresent(); }
+
+	public boolean isPausingUser(User user) {
+		if (!pausedUser.isPresent()) {
+			return false;
+		}
+		return user.equals(pausedUser.get());
+	}
+
+	public void pause(User user) throws ServerException {
+		if (pausedUser.isPresent()) {
+			throw new ServerException(StatusCodes.CONFLICT, "Server is already paused");
+		}
+		pausedUser = Optional.of(user);
 	}
 	
-	public void resume() {
-		isPaused = false;
+	public void resume(User user) throws ServerException {
+		if (!pausedUser.isPresent()) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Server is not paused");
+		}
+		if (!pausedUser.get().equals(user)) {
+			throw new ServerException(StatusCodes.UNAUTHORIZED, "Only pausing user can unpause");
+		}
+		pausedUser = Optional.empty();
 	}
 	
 	public boolean isWorkFlowManager(User user, ProjectId pid) {
@@ -187,6 +195,7 @@ public final class HTTPServer {
 		webRouter.add("POST", HEAD,  changeServiceHandler);
 		webRouter.add("POST", LATEST_CHANGES,  changeServiceHandler);
 		webRouter.add("POST", ALL_CHANGES,  changeServiceHandler);
+		webRouter.add("POST", SQUASH, changeServiceHandler);
 		
 		// create code generator handler
 		HttpHandler codeGenHandler = new AuthenticationHandler(new BlockingHandler(new CodeGenHandler(serverConfiguration)));
@@ -203,7 +212,8 @@ public final class HTTPServer {
 		webRouter.add("GET", PROJECT_SNAPSHOT,  metaprojectHandler);
 		webRouter.add("GET", PROJECTS, metaprojectHandler);
 		webRouter.add("GET", PROJECTS_UNCLASSIFIED, metaprojectHandler);
-		
+		webRouter.add("GET", SERVER_STATUS, metaprojectHandler);
+
 		adminRouter.add("GET", METAPROJECT, metaprojectHandler);
 		adminRouter.add("POST", METAPROJECT, metaprojectHandler);
 		adminRouter.add("POST", PROJECT,  metaprojectHandler);

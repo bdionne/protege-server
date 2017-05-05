@@ -17,6 +17,8 @@ public class ServerEndpoints {
 	public static final String PROJECTS = ROOT_PATH + "/meta/projects";
 	public static final String PROJECTS_UNCLASSIFIED = ROOT_PATH + "/meta/projects/unclassified";
 	public static final String METAPROJECT = ROOT_PATH + "/meta/metaproject";
+    public static final String SQUASH = ROOT_PATH + "/meta/squash";
+    public static final String SERVER_STATUS = ROOT_PATH + "/meta/serverstatus";
 
 	public static final String ALL_CHANGES = ROOT_PATH + "/all_changes"; 
 	public static final String LATEST_CHANGES = ROOT_PATH + "/latest_changes"; 

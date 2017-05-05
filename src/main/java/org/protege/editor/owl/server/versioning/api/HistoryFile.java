@@ -20,48 +20,13 @@ public class HistoryFile extends File {
 
     private static final long serialVersionUID = 5138690689632511640L;
 
-    public static final String EXTENSION = ".history";
+    public static final String FILENAME = "history";
 
     /*
      * Avoid external initialization
      */
     private HistoryFile(@Nonnull String filePath) {
         super(checkNotNull(filePath));
-    }
-
-    /**
-     * Returns a history file object and creates a new file located at the given parent directory
-     * and input file name.
-     *
-     * @param parentDir
-     *          The parent directory
-     * @param filename
-     *          The name of the history file, must be followed by .history extension
-     * @return A <code>HistoryFile</code> object.
-     * @throws IOException If an I/O problem occurs.
-     */
-    public static HistoryFile createNew(@Nonnull String parentDir, @Nonnull String filename) throws IOException {
-        return createNew(parentDir, filename, true);
-    }
-
-    /**
-     * Returns a history file object with an option to create the file at the given parent
-     * directory and input file name.
-     *
-     * @param parentDir
-     *          The parent directory
-     * @param filename
-     *          The name of the history file, must be followed by .history extension
-     * @param doCreate
-     *          Creates a new file in the file system if set <code>true</code>.
-     * @return A <code>HistoryFile</code> object.
-     * @throws IOException If an I/O problem occurs.
-     */
-    public static HistoryFile createNew(@Nonnull String parentDir, @Nonnull String filename, boolean doCreate) throws IOException {
-        checkNotNull(parentDir);
-        checkNotNull(filename);
-        String filepath = constructFilePath(parentDir, filename);
-        return createNew(filepath, doCreate);
     }
 
     /**
@@ -88,27 +53,17 @@ public class HistoryFile extends File {
      */
     public static HistoryFile createNew(@Nonnull String filepath, boolean doCreate) throws IOException {
         checkNotNull(filepath);
+        if(!filepath.endsWith(FILENAME)) {
+            if(!filepath.endsWith(File.separator)) {
+                filepath = filepath + File.separator;
+            }
+            filepath = filepath + FILENAME;
+        }
         HistoryFile f = new HistoryFile(filepath);
         if (doCreate) {
             FileUtils.touch(f); // Create an empty file in the file system
         }
         return f;
-    }
-
-    /**
-     * Returns a history file object by opening an existing history file at the given parent
-     * directory and input file name.
-     *
-     * @param parentDir
-     *          The parent directory
-     * @param filename
-     *          The name of the history file, must be followed by .history extension
-     * @return A <code>HistoryFile</code> object.
-     * @throws InvalidHistoryFileException If the input file name is not followed by .history extension
-     */
-    public static HistoryFile openExisting(String parentDir, String filename) throws InvalidHistoryFileException {
-        String filepath = constructFilePath(parentDir, filename);
-        return openExisting(filepath);
     }
 
     /**
@@ -128,15 +83,9 @@ public class HistoryFile extends File {
      * Private helper methods
      */
 
-    private static String constructFilePath(String parentDir, String filename) {
-        parentDir = appendEndFileSeparatorWhenMissing(parentDir);
-        filename = appendFileExtensionWhenMissing(filename);
-        return parentDir + filename;
-    }
-
     private static HistoryFile checkAndReturnHistoryFileWhenValid(String filepath) throws InvalidHistoryFileException {
-        if (!filepath.endsWith(EXTENSION)) {
-            String message = String.format("File name must end with %s extension", EXTENSION);
+        if (!filepath.endsWith(FILENAME)) {
+            String message = String.format("File name must be %s", FILENAME);
             throw new InvalidHistoryFileException(message);
         }
         HistoryFile f = new HistoryFile(filepath);
@@ -145,19 +94,5 @@ public class HistoryFile extends File {
             throw new InvalidHistoryFileException(message);
         }
         return f;
-    }
-
-    private static String appendEndFileSeparatorWhenMissing(String parentDir) {
-        if (!parentDir.endsWith(File.separator)) {
-            parentDir = parentDir + File.separator;
-        }
-        return parentDir;
-    }
-
-    private static String appendFileExtensionWhenMissing(String filename) {
-        if (!filename.endsWith(EXTENSION)) {
-            filename = filename + EXTENSION;
-        }
-        return filename;
     }
 }

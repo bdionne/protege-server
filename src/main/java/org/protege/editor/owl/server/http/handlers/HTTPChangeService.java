@@ -1,9 +1,9 @@
 package org.protege.editor.owl.server.http.handlers;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 import org.protege.editor.owl.server.api.ChangeService;
 import org.protege.editor.owl.server.api.CommitBundle;
@@ -13,8 +13,10 @@ import org.protege.editor.owl.server.api.exception.OutOfSyncException;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
 import org.protege.editor.owl.server.http.HTTPServer;
 import org.protege.editor.owl.server.http.ServerEndpoints;
+import org.protege.editor.owl.server.http.ServerProperties;
 import org.protege.editor.owl.server.http.exception.ServerException;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
+import org.protege.editor.owl.server.util.SnapShot;
 import org.protege.editor.owl.server.versioning.api.ChangeHistory;
 import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.HistoryFile;
@@ -56,39 +58,57 @@ public class HTTPChangeService extends BaseRoutingHandler {
 
 	private void handlingRequest(HttpServerExchange exchange)
 			throws IOException, ClassNotFoundException, LoginTimeoutException, ServerException {
+		ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
+		ProjectId projectId = (ProjectId) ois.readObject();
+
+		if(projectId == null) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "ProjectId must not be null.");
+		}
+
+		String clientChecksum = exchange.getRequestHeaders()
+				.getFirst(ServerProperties.SNAPSHOT_CHECKSUM_HEADER);
+
+		String serverChecksum = serverLayer.getSnapshotChecksum(projectId);
+		if(!clientChecksum.equals(serverChecksum)) {
+			throw new ServerException(ServerProperties.HISTORY_SNAPSHOT_OUT_OF_DATE,
+					"History snapshot out of date for "
+					+ projectId + ": " + clientChecksum + " != " + serverChecksum);
+		}
+
 		String requestPath = exchange.getRequestPath();
-		if (requestPath.equals(ServerEndpoints.COMMIT)) {
-			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
-			ProjectId pid = (ProjectId) ois.readObject();
-			if (HTTPServer.server().isPaused()) {
-				User user = (this.getAuthToken(exchange)).getUser();
-				if (HTTPServer.server().isWorkFlowManager(user, pid)) {
-					System.out.println("ok proceed");
-
-				} else {
-					throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, 
-							"Server in maintenance mode, please try later");
-				}
-
+		User user = (this.getAuthToken(exchange)).getUser();
+		if (HTTPServer.server().isPaused()) {
+			if ((requestPath.equals(ServerEndpoints.COMMIT) || requestPath.equals(ServerEndpoints.SQUASH)
+					&& HTTPServer.server().isWorkFlowManager(user, projectId)
+					&& HTTPServer.server().isPausingUser(user))
+					|| requestPath.equals(ServerEndpoints.LATEST_CHANGES)) {
+				System.out.println("ok proceed");
+			} else {
+				throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE,
+						"Server in maintenance mode, please try later");
 			}
+		}
+
+		if (requestPath.equals(ServerEndpoints.COMMIT)) {
 			CommitBundle bundle = (CommitBundle) ois.readObject();
-			submitCommitBundle(getAuthToken(exchange), pid, bundle, exchange.getOutputStream());
+			submitCommitBundle(getAuthToken(exchange), projectId, bundle, exchange.getOutputStream());
 		}
 		else if (requestPath.equals(ServerEndpoints.ALL_CHANGES)) {
-			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			HistoryFile file = (HistoryFile) ois.readObject();
 			retrieveAllChanges(file, exchange.getOutputStream());
 		}
 		else if (requestPath.equals(ServerEndpoints.LATEST_CHANGES)) {
-			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			HistoryFile file = (HistoryFile) ois.readObject();
 			DocumentRevision start = (DocumentRevision) ois.readObject();
 			retrieveLatestChanges(file, start, exchange.getOutputStream());
 		}
 		else if (requestPath.equals(ServerEndpoints.HEAD)) {
-			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			HistoryFile file = (HistoryFile) ois.readObject();
 			retrieveHeadRevision(file, exchange.getOutputStream());
+		}
+		else if (requestPath.equals(ServerEndpoints.SQUASH)) {
+			SnapShot snapshot = (SnapShot) ois.readObject();
+			squashHistory(snapshot, projectId, exchange.getOutputStream());
 		}
 	}
 
@@ -160,5 +180,38 @@ public class HTTPChangeService extends BaseRoutingHandler {
 		catch (IOException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to transmit the returned data", e);
 		}
+	}
+
+	private void squashHistory(SnapShot snapShot, ProjectId projectId, OutputStream os) throws IOException {
+		HistoryFile historyFile = serverLayer.createHistoryFile(projectId);
+		String historyName = historyFile.getName();
+
+		changeService.clearHistoryCacheEntry(historyFile);
+
+		String archiveDir = serverLayer.getConfiguration().getProperty(ServerProperties.ARCHIVE_ROOT)
+				+ File.separator
+				+ projectId.get()
+				+ File.separator
+				+ "squash-"
+				+ LocalDateTime.now()
+				+ File.separator;
+
+		String dataDir = serverLayer.getConfiguration().getServerRoot()
+				+ File.separator
+				+ projectId.get()
+				+ File.separator;
+
+		String snapshotName = historyName + "-snapshot";
+
+		String fullHistoryPath = dataDir + historyName;
+		String backupName = new StringBuilder(fullHistoryPath).insert(fullHistoryPath.lastIndexOf(File.separator) + 1, "~").toString();
+
+		Files.createDirectories(Paths.get(archiveDir));
+		Files.move(Paths.get(dataDir + historyName), Paths.get(archiveDir + historyName));
+		Files.move(Paths.get(dataDir + snapshotName), Paths.get(archiveDir + snapshotName));
+		Files.delete(Paths.get(backupName));
+		Files.createFile(Paths.get(dataDir + historyName));
+
+		serverLayer.saveProjectSnapshot(snapShot, projectId, os);
 	}
 }
