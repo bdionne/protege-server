@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
+import edu.stanford.protege.metaproject.api.ProjectId;
 import org.protege.editor.owl.server.versioning.api.ChangeHistory;
 import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.HistoryFile;
@@ -77,6 +78,10 @@ public class ChangeDocumentPool {
     public synchronized void appendChanges(HistoryFile historyFile, ChangeHistory changes) {
         ChangeDocumentPoolEntry entry = getPoolEntry(historyFile);
         entry.appendChanges(changes);
+    }
+
+    public synchronized void clearHistoryCacheEntry(HistoryFile historyFile) {
+        pool.invalidate(historyFile.getAbsolutePath());
     }
 
     @Nonnull

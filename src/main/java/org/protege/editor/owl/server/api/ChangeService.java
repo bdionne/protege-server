@@ -5,6 +5,8 @@ import org.protege.editor.owl.server.versioning.api.ChangeHistory;
 import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.HistoryFile;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Josef Hardi <johardi@stanford.edu> <br>
  *         Stanford Center for Biomedical Informatics Research
@@ -27,4 +29,6 @@ public interface ChangeService {
             throws ServerServiceException;
 
     DocumentRevision getHeadRevision(HistoryFile historyFile) throws ServerServiceException;
+
+    void clearHistoryCacheEntry(@Nonnull HistoryFile historyFile);
 }
