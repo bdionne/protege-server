@@ -45,7 +45,7 @@ public class History implements Serializable {
 	}
 	
 	public History(String un, String c, String n, String op, String ref) {
-		this(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
+		this(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
 				un, c, n, op, ref);		
 	}
 	
