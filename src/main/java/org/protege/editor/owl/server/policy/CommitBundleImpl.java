@@ -31,12 +31,6 @@ public class CommitBundleImpl implements CommitBundle {
     }
 
     @Override
-    @Deprecated
-    public DocumentRevision getHeadRevision() {
-        return baseRevision;
-    }
-
-    @Override
     public List<Commit> getCommits() {
         return Collections.unmodifiableList(commits);
     }
