@@ -15,7 +15,7 @@ import edu.stanford.protege.metaproject.api.User;
 
 import static org.protege.editor.owl.server.http.ServerProperties.CODEGEN_FILE;
 
-public abstract class ServerLayer implements Server {
+public abstract class ServerLayer implements ServerServices {
 
     private List<ServerListener> listeners = new ArrayList<>();
 
