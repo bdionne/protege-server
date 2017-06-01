@@ -24,6 +24,7 @@ import org.protege.editor.owl.server.http.exception.ServerException;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
 import org.protege.editor.owl.server.util.SnapShot;
 import org.protege.editor.owl.server.versioning.api.ServerDocument;
+import org.protege.osgi.framework.Server;
 import org.semanticweb.binaryowl.BinaryOWLOntologyDocumentSerializer;
 import org.semanticweb.binaryowl.owlapi.BinaryOWLOntologyBuildingHandler;
 import org.semanticweb.binaryowl.owlapi.OWLOntologyWrapper;
@@ -152,7 +153,22 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(exchange.getOutputStream());
 			List<Project> projects = new ArrayList<>();
-			oos.writeObject(projects);
+			try {
+				for (Project project : serverLayer.getAllProjects(getAuthToken(exchange))) {
+					boolean classifiable = project.getOptions()
+						.map(projectOptions -> projectOptions.getValue("classifiable").equals("true")).orElse(false);
+					if (classifiable) {
+						projects.add(project);
+					}
+				}
+				oos.writeObject(projects);
+			} catch (AuthorizationException e) {
+				throw new ServerException(StatusCodes.UNAUTHORIZED, e);
+			} catch (ServerServiceException e) {
+				throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, e);
+			} catch (LoginTimeoutException e) {
+				throw new RuntimeException(e);
+			}
 		} catch (IOException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to transmit returned data", e);
 		}
