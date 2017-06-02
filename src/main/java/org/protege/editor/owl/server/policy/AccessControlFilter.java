@@ -199,7 +199,7 @@ public class AccessControlFilter extends ServerFilterAdapter {
         User user = token.getUser();
         Operation operation = commitBundle.getOperation();
         if (config.isOperationAllowed(operation.getId(), projectId, user.getId())) {
-            return getDelegate().commit(token, projectId, commitBundle);
+					return delegate.commit(token, projectId, commitBundle);
         }
         else {
             OperationNotAllowedException e = new OperationNotAllowedException(operation);
@@ -215,7 +215,7 @@ public class AccessControlFilter extends ServerFilterAdapter {
         List<Exception> violations = new ArrayList<>();
         batchCheckPermission(user.getId(), projectId, operations, violations);
         if (violations.isEmpty()) {
-            return getDelegate().commit(token, projectId, commitBundle);
+					return delegate.commit(token, projectId, commitBundle);
         }
         else {
             OperationNotAllowedException e = OperationNotAllowedException.create(violations);
