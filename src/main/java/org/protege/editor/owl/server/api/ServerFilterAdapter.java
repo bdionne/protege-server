@@ -16,11 +16,13 @@ import java.util.Optional;
  * @author Josef Hardi <johardi@stanford.edu> <br>
  *         Stanford Center for Biomedical Informatics Research
  */
-public class ServerFilterAdapter extends AbstractServerFilter {
+public class ServerFilterAdapter extends ServerLayer {
 
-    public ServerFilterAdapter(ServerLayer delegate) {
-        super(delegate);
-    }
+	private ServerLayer delegate;
+
+	public ServerFilterAdapter(ServerLayer delegate) {
+		this.delegate = delegate;
+	}
 
     @Override
     public void createUser(AuthToken token, User newUser, Optional<? extends Password> password)
@@ -238,5 +240,14 @@ public class ServerFilterAdapter extends AbstractServerFilter {
     public boolean isOperationAllowed(AuthToken token, OperationId operationId, UserId userId)
             throws AuthorizationException, ServerServiceException {
         return getDelegate().isOperationAllowed(token, operationId, userId);
+    }
+
+	protected ServerLayer getDelegate() {
+        return delegate;
+    }
+
+	@Override
+    public ServerConfiguration getConfiguration() {
+        return getDelegate().getConfiguration();
     }
 }
