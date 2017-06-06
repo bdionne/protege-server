@@ -78,7 +78,7 @@ public class HTTPChangeService extends BaseRoutingHandler {
 			String clientChecksum = exchange.getRequestHeaders()
 					.getFirst(ServerProperties.SNAPSHOT_CHECKSUM_HEADER);
 			if (clientChecksum == null) {
-				throw new ServerException(StatusCodes.BAD_REQUEST, "Missing snapshot checksum");
+				throw new ServerException(StatusCodes.BAD_REQUEST, "project " + projectId + " does not have a checksum");
 			}
 			String serverChecksum = serverLayer.getSnapshotChecksum(projectId);
 			if(!clientChecksum.equals(serverChecksum)) {
