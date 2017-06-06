@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
+import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.server.api.ChangeService;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.api.ServerLayer;
@@ -26,6 +27,7 @@ import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.User;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import org.protege.osgi.framework.Server;
 
 public class HTTPChangeService extends BaseRoutingHandler {
 
@@ -59,25 +61,36 @@ public class HTTPChangeService extends BaseRoutingHandler {
 	private void handlingRequest(HttpServerExchange exchange)
 			throws IOException, ClassNotFoundException, LoginTimeoutException, ServerException {
 		ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
-		ProjectId projectId = (ProjectId) ois.readObject();
-
-		if(projectId == null) {
-			throw new ServerException(StatusCodes.BAD_REQUEST, "ProjectId must not be null.");
-		}
-
-		String clientChecksum = exchange.getRequestHeaders()
-				.getFirst(ServerProperties.SNAPSHOT_CHECKSUM_HEADER);
-
-		String serverChecksum = serverLayer.getSnapshotChecksum(projectId);
-		if(!clientChecksum.equals(serverChecksum)) {
-			throw new ServerException(ServerProperties.HISTORY_SNAPSHOT_OUT_OF_DATE,
-					"History snapshot out of date for "
-					+ projectId + ": " + clientChecksum + " != " + serverChecksum);
-		}
+		ProjectId projectId = null;
 
 		String requestPath = exchange.getRequestPath();
-		User user = (this.getAuthToken(exchange)).getUser();
+		if (	requestPath.equals(ServerEndpoints.COMMIT) ||
+				requestPath.equals(ServerEndpoints.HEAD) ||
+				requestPath.equals(ServerEndpoints.ALL_CHANGES) ||
+				requestPath.equals(ServerEndpoints.SQUASH)) {
+			String sProjectId = exchange.getRequestHeaders()
+					.getFirst(ServerProperties.PROJECTID_HEADER);
+			if(sProjectId == null) {
+				throw new ServerException(StatusCodes.BAD_REQUEST, "Missing ProjectId");
+			}
+			projectId = new ProjectIdImpl(sProjectId);
+
+			String clientChecksum = exchange.getRequestHeaders()
+					.getFirst(ServerProperties.SNAPSHOT_CHECKSUM_HEADER);
+			if (clientChecksum == null) {
+				throw new ServerException(StatusCodes.BAD_REQUEST, "Missing snapshot checksum");
+			}
+			String serverChecksum = serverLayer.getSnapshotChecksum(projectId);
+			if(!clientChecksum.equals(serverChecksum)) {
+				throw new ServerException(ServerProperties.HISTORY_SNAPSHOT_OUT_OF_DATE,
+						"History snapshot out of date for "
+								+ projectId + ": " + clientChecksum + " != " + serverChecksum);
+			}
+		}
+
 		if (HTTPServer.server().isPaused()) {
+			User user = (this.getAuthToken(exchange)).getUser();
+
 			if ((requestPath.equals(ServerEndpoints.COMMIT) || requestPath.equals(ServerEndpoints.SQUASH)
 					&& HTTPServer.server().isWorkFlowManager(user, projectId)
 					&& HTTPServer.server().isPausingUser(user))
