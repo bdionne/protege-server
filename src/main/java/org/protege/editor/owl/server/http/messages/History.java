@@ -21,7 +21,7 @@ public class History implements Serializable {
 	public enum HistoryType {EVS, CONCEPT};
 	
 	public static History create(String[] tokens) {
-		String date = tokens[0];
+		// ignore date when using EVS history for concept history
 		String un = tokens[1];
 		String code = tokens[2];
 		String name = tokens[3];
@@ -30,12 +30,12 @@ public class History implements Serializable {
 		if (tokens.length == 6) {		
 			ref = tokens[5];
 		}
-		return new History(date, un, code, name, op, ref);
+		return new History(un, code, name, op, ref);
 		
 	}
 	
-	private History(String date, String un, String c, String n, String op, String ref) {
-		this.date = date;
+	public History(String un, String c, String n, String op, String ref) {
+		this.date = formatNow();
 		user_name = un;
 		code = c;
 		name = n;
@@ -44,9 +44,12 @@ public class History implements Serializable {
 		
 	}
 	
-	public History(String un, String c, String n, String op, String ref) {
-		this(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
-				un, c, n, op, ref);		
+	
+	
+	private String formatNow() {
+		LocalDateTime date = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		return date.format(formatter);
 	}
 	
 	
