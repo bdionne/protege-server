@@ -7,6 +7,7 @@ import org.protege.editor.owl.server.versioning.api.ChangeHistory;
 import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.HistoryFile;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class DefaultChangeService implements ChangeService {
@@ -32,6 +33,11 @@ public class DefaultChangeService implements ChangeService {
         catch (IOException e) {
             throw new ServerServiceException("Error while getting head revision at the server", e);
         }
+    }
+
+    @Override
+    public void clearHistoryCacheEntry(@Nonnull HistoryFile historyFile) {
+        changePool.clearHistoryCacheEntry(historyFile);
     }
 
     private ChangeHistory getChangeHistory(HistoryFile historyFile) throws ServerServiceException {

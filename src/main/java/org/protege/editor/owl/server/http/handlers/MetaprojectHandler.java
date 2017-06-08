@@ -1,11 +1,6 @@
 package org.protege.editor.owl.server.http.handlers;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -15,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.stanford.protege.metaproject.impl.ServerStatus;
 import org.protege.editor.owl.server.api.ServerLayer;
 import org.protege.editor.owl.server.api.exception.AuthorizationException;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
@@ -24,14 +20,8 @@ import org.protege.editor.owl.server.http.exception.ServerException;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
 import org.protege.editor.owl.server.util.SnapShot;
 import org.protege.editor.owl.server.versioning.api.ServerDocument;
-import org.protege.osgi.framework.Server;
-import org.semanticweb.binaryowl.BinaryOWLOntologyDocumentSerializer;
-import org.semanticweb.binaryowl.owlapi.BinaryOWLOntologyBuildingHandler;
-import org.semanticweb.binaryowl.owlapi.OWLOntologyWrapper;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +37,6 @@ import edu.stanford.protege.metaproject.api.Serializer;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import edu.stanford.protege.metaproject.api.UserId;
 import edu.stanford.protege.metaproject.api.exception.ObjectConversionException;
-import edu.stanford.protege.metaproject.api.exception.UnknownProjectIdException;
 import edu.stanford.protege.metaproject.serialization.DefaultJsonSerializer;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -58,7 +47,6 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaprojectHandler.class);
 	private static final PolicyFactory f = ConfigurationManager.getFactory();
-
 	private final ServerLayer serverLayer;
 
 	private boolean requiredRestarting = false;
@@ -145,9 +133,10 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 			requiredRestarting = true;
 		} else if (requestPath.equals(ServerEndpoints.PROJECTS_UNCLASSIFIED) && requestMethod.equals(Methods.GET)) {
         retrieveProjectsUnclassified(exchange);
-    }
+    } else if (requestPath.equals(ServerEndpoints.SERVER_STATUS) && requestMethod.equals(Methods.GET)) {
+			retrieveServerStatus(exchange.getOutputStream());
+		}
 	}
-
 
 	public void retrieveProjectsUnclassified(HttpServerExchange exchange) throws ServerException {
 		try {
@@ -238,88 +227,27 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 
 	private void createProjectSnapshot(ProjectId projectId, SnapShot snapshot, OutputStream os) throws ServerException {
 		try {
-			Project project = serverLayer.getConfiguration().getProject(projectId);
-			saveProjectSnapshot(snapshot, getSnapShotFile(project));
+			serverLayer.saveProjectSnapshot(snapshot, projectId, os);
 		}
-		catch (IOException | UnknownProjectIdException e) {
+		catch (IOException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to create project snapshot", e);
-		}
-	}
-
-	private void saveProjectSnapshot(SnapShot snapshot, File snapshotFile) throws IOException {
-		BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(snapshotFile));
-		try {
-			BinaryOWLOntologyDocumentSerializer serializer = new BinaryOWLOntologyDocumentSerializer();
-			long start = System.currentTimeMillis();
-			serializer.write(new OWLOntologyWrapper(snapshot.getOntology()), new DataOutputStream(outputStream));
-			logger.info("Saving snapshot in " + (System.currentTimeMillis() - start) + " ms");
-		}
-		finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				}
-				catch (IOException e) {
-					// Ignore the exception but report it into the log
-					logger.warn("Unable to close the file output stream used to save the snapshot", e);
-				}
-			}
 		}
 	}
 
 	private void retrieveProjectSnapshot(ProjectId projectId, OutputStream os) throws ServerException {
 		try {
-			Project project = serverLayer.getConfiguration().getProject(projectId);
-			OWLOntology ontIn = loadProjectSnapshot(getSnapShotFile(project));
+			OWLOntology ontIn = serverLayer.loadProjectSnapshot(projectId);
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				oos.writeObject(new SnapShot(ontIn));
+				oos.writeObject(serverLayer.getSnapshotChecksum(projectId));
 			}
 			catch (IOException e) {
 				throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to transmit the returned data", e);
 			}
 		}
-		catch (OWLOntologyCreationException | IOException | UnknownProjectIdException e) {
+		catch (OWLOntologyCreationException | IOException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to fetch project snapshot", e);
-		}
-	}
-
-	private File getSnapShotFile(Project project) throws ServerException {
-		String fname;
-		try {
-			fname = serverLayer.getHistoryFilePath(project) + "-snapshot";
-			return new File(fname);
-		} catch (IOException e) {
-			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to open snapshot file");
-
-			
-		}
-		
-	}
-
-	private OWLOntology loadProjectSnapshot(File snapshotFile) throws OWLOntologyCreationException, IOException {
-		BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(snapshotFile));
-		try {
-			OWLOntologyManager ontoManager = OWLManager.createOWLOntologyManager();
-			OWLOntology ontology = ontoManager.createOntology(); // use as a placeholder
-			BinaryOWLOntologyDocumentSerializer serializer = new BinaryOWLOntologyDocumentSerializer();
-			long start = System.currentTimeMillis();
-			serializer.read(inputStream,
-					new BinaryOWLOntologyBuildingHandler(ontology),
-					ontoManager.getOWLDataFactory());
-			System.out.println("Reading snapshot in " + (System.currentTimeMillis() - start) + " ms");
-			return ontology;
-		}
-		finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				}
-				catch (IOException e) {
-					// Ignore the exception but report it into the log
-					logger.warn("Unable to close the file input stream used to load the snapshot", e);
-				}
-			}
 		}
 	}
 
@@ -340,6 +268,17 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 		}
 		catch (IOException e) {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to save changes of the metaproject", e);
+		}
+	}
+
+	private void retrieveServerStatus(OutputStream os) throws ServerException {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			ServerStatus serverStatus = new ServerStatus(HTTPServer.server().pausedUser());
+			oos.writeObject(serverStatus);
+		}
+		catch (IOException e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to construct ServerStatus");
 		}
 	}
 }

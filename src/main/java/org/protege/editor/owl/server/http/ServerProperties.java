@@ -33,4 +33,11 @@ public final class ServerProperties {
      * Constants for timeout period
      */
     public static final String LOGIN_TIMEOUT_PERIOD = "login_timeout_period";
+
+    /*
+     * Constants for custom HTTP headers and exceptions
+     */
+    public static final String PROJECTID_HEADER = "X-ProjectId";
+    public static final String SNAPSHOT_CHECKSUM_HEADER = "X-SnapshotId";
+    public static final int HISTORY_SNAPSHOT_OUT_OF_DATE = 499;
 }

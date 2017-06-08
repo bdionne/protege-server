@@ -1,7 +1,6 @@
 package org.protege.editor.owl.server.change;
 
 import edu.stanford.protege.metaproject.api.*;
-import edu.stanford.protege.metaproject.api.exception.UnknownProjectIdException;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.api.ServerFilterAdapter;
 import org.protege.editor.owl.server.api.ServerLayer;
@@ -16,7 +15,6 @@ import org.protege.editor.owl.server.versioning.api.ServerDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -49,25 +47,15 @@ public class ChangeManagementFilter extends ServerFilterAdapter {
             throws AuthorizationException, OutOfSyncException, ServerServiceException {
         try {
             ChangeHistory changeHistory = super.commit(token, projectId, commitBundle);
-            Project project = getConfiguration().getProject(projectId);
-            String projectFilePath = getHistoryFilePath(project);
+            String projectFilePath = getHistoryFilePath(projectId);
             HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
             changePool.appendChanges(historyFile, changeHistory);
             return changeHistory;
         }
-        catch (UnknownProjectIdException e) {
-            logger.error(printLog(token.getUser(), "Commit changes", e.getMessage()));
-            throw new ServerServiceException(e.getMessage(), e);
-        }
         catch (InvalidHistoryFileException e) {
             logger.error(printLog(token.getUser(), "Commit changes", e.getMessage()), e);
             throw new ServerServiceException(e.getMessage(), e);
-        } catch (IOException e) {
-        	String message = "Unable to access history file in remote server";
-            logger.error(printLog(token.getUser(), "Commit changes", message), e);
-            throw new ServerServiceException(message, e);
-			
-		}
+        }
     }
 
     

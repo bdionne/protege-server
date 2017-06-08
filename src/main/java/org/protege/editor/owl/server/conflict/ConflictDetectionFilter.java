@@ -1,11 +1,7 @@
 package org.protege.editor.owl.server.conflict;
 
 import edu.stanford.protege.metaproject.api.AuthToken;
-import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ProjectId;
-import edu.stanford.protege.metaproject.api.exception.UnknownProjectIdException;
-
-import java.io.IOException;
 
 import org.protege.editor.owl.server.api.ChangeService;
 import org.protege.editor.owl.server.api.CommitBundle;
@@ -42,9 +38,8 @@ public class ConflictDetectionFilter extends ServerFilterAdapter {
     public synchronized ChangeHistory commit(AuthToken token, ProjectId projectId, CommitBundle commitBundle)
             throws AuthorizationException, OutOfSyncException, ServerServiceException {
         try {
-            Project project = getConfiguration().getProject(projectId);
             // TODO: head revision is checked here, but another thread may already be proceeding to do a commit
-            String projectFilePath = getHistoryFilePath(project);
+            String projectFilePath = getHistoryFilePath(projectId);
             HistoryFile historyFile = HistoryFile.openExisting(projectFilePath);
             DocumentRevision serverHeadRevision = changeService.getHeadRevision(historyFile);
             DocumentRevision commitBaseRevision = commitBundle.getBaseRevision();
@@ -54,11 +49,7 @@ public class ConflictDetectionFilter extends ServerFilterAdapter {
             }
             return super.commit(token, projectId, commitBundle);
         }
-        catch (UnknownProjectIdException e) {
-            logger.error(printLog(token.getUser(), "Commit changes", e.getMessage()));
-            throw new ServerServiceException(e.getMessage(), e);
-        }
-        catch (InvalidHistoryFileException | IOException e) {
+        catch (InvalidHistoryFileException e) {
         	String message = "Unable to access history file in remote server";
             logger.error(printLog(token.getUser(), "Commit changes", message), e);
             throw new ServerServiceException(message, e);
