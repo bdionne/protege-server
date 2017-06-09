@@ -100,7 +100,7 @@ public final class HTTPServer {
 	public boolean isWorkFlowManager(User user, ProjectId pid) {
 		try {
 			return serverConfiguration.getRoles(user.getId(), pid, 
-					GlobalPermissions.EXCLUDED).contains(serverConfiguration.getRole(new RoleIdImpl("mp-project-manager")));
+					GlobalPermissions.INCLUDED).contains(serverConfiguration.getRole(new RoleIdImpl("mp-project-manager")));
 		} catch (UnknownRoleIdException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
