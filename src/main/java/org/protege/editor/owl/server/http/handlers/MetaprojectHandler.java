@@ -44,8 +44,6 @@ import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
 import io.undertow.util.StatusCodes;
 
-import javax.swing.text.html.Option;
-
 public class MetaprojectHandler extends BaseRoutingHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetaprojectHandler.class);
