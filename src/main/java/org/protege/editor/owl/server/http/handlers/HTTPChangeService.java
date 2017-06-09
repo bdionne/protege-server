@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import edu.stanford.protege.metaproject.api.Project;
@@ -109,8 +110,8 @@ public class HTTPChangeService extends BaseRoutingHandler {
 			if (clientChecksum == null) {
 				throw new ServerException(StatusCodes.BAD_REQUEST, "project " + projectId + " does not have a checksum");
 			}
-			String serverChecksum = serverLayer.getSnapshotChecksum(projectId);
-			if(!clientChecksum.equals(serverChecksum)) {
+			Optional<String> serverChecksum = serverLayer.getSnapshotChecksum(projectId);
+			if(serverChecksum.isPresent() && !clientChecksum.equals(serverChecksum.get())) {
 				throw new ServerException(ServerProperties.HISTORY_SNAPSHOT_OUT_OF_DATE,
 						"History snapshot out of date for "
 								+ projectId + ": " + clientChecksum + " != " + serverChecksum);

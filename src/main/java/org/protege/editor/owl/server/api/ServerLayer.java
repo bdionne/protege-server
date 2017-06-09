@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.stanford.protege.metaproject.api.ProjectId;
 import org.protege.editor.owl.server.http.HTTPServer;
@@ -148,8 +149,14 @@ public abstract class ServerLayer implements ServerServices {
         }
     }
 
-    public String getSnapshotChecksum(ProjectId projectId) throws IOException {
+    public Optional<String> getSnapshotChecksum(ProjectId projectId) {
         Path path = Paths.get(getSnapShotFile(projectId).getAbsolutePath() + SNAPSHOT_CHECKSUM);
-        return new String(Files.readAllBytes(path), Charset.defaultCharset());
+        try {
+            return Optional.ofNullable(new String(Files.readAllBytes(path), Charset.defaultCharset()));
+        }
+        catch (IOException e) {
+            // snapshot is not present
+            return Optional.empty();
+        }
     }
 }
