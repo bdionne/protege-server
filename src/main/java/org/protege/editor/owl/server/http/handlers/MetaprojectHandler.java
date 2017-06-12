@@ -16,6 +16,7 @@ import org.protege.editor.owl.server.api.exception.AuthorizationException;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
 import org.protege.editor.owl.server.http.HTTPServer;
 import org.protege.editor.owl.server.http.ServerEndpoints;
+import org.protege.editor.owl.server.http.ServerProperties;
 import org.protege.editor.owl.server.http.exception.ServerException;
 import org.protege.editor.owl.server.security.LoginTimeoutException;
 import org.protege.editor.owl.server.util.SnapShot;
@@ -108,6 +109,11 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 		else if (requestPath.equals(ServerEndpoints.PROJECT) && requestMethod.equals(Methods.GET)) {
 			ProjectId projectId = f.getProjectId(getQueryParameter(exchange, "projectid"));
 			openExistingProject(getAuthToken(exchange), projectId, exchange.getOutputStream());
+			Optional<String> checksum = serverLayer.getSnapshotChecksum(projectId);
+			if (checksum.isPresent()) {
+				exchange.getResponseHeaders().put(new HttpString(ServerProperties.SNAPSHOT_CHECKSUM_HEADER),
+						checksum.get());
+			}
 		}
 		else if (requestPath.equals(ServerEndpoints.PROJECT) && requestMethod.equals(Methods.DELETE)) {
 			ProjectId projectId = f.getProjectId(getQueryParameter(exchange, "projectid"));
@@ -240,7 +246,7 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(os);
 				oos.writeObject(new SnapShot(ontIn));
-				oos.writeObject(serverLayer.getSnapshotChecksum(projectId));
+				oos.writeObject(serverLayer.getSnapshotChecksum(projectId).get());
 			}
 			catch (IOException e) {
 				throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to transmit the returned data", e);
