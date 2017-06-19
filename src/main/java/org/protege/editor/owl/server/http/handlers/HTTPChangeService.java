@@ -114,7 +114,7 @@ public class HTTPChangeService extends BaseRoutingHandler {
 			if(serverChecksum.isPresent() && !clientChecksum.equals(serverChecksum.get())) {
 				throw new ServerException(ServerProperties.HISTORY_SNAPSHOT_OUT_OF_DATE,
 						"History snapshot out of date for "
-								+ projectId + ": " + clientChecksum + " != " + serverChecksum);
+								+ projectId + ": " + clientChecksum + " != " + serverChecksum.get());
 			}
 		}
 
