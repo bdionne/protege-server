@@ -151,9 +151,9 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 			try {
 				for (Project project : serverLayer.getAllProjects(getAuthToken(exchange))) {
 					boolean classifiable = project.getOptions()
-						.flatMap(projectOptions -> Optional.ofNullable(projectOptions.getValue("classifiable")))
-						.map(classify -> classify.equals("true"))
-						.orElse(false);
+						.transform(projectOptions -> com.google.common.base.Optional.fromNullable(projectOptions.getValue("classifiable")))
+						.transform(classify -> classify.equals("true"))
+						.or(false);
 					if (classifiable) {
 						projects.add(project);
 					}
