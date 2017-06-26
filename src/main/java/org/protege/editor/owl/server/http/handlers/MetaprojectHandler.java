@@ -150,11 +150,9 @@ public class MetaprojectHandler extends BaseRoutingHandler {
 			List<Project> projects = new ArrayList<>();
 			try {
 				for (Project project : serverLayer.getAllProjects(getAuthToken(exchange))) {
-					boolean classifiable = project.getOptions()
-						.transform(projectOptions -> com.google.common.base.Optional.fromNullable(projectOptions.getValue("classifiable")))
-						.transform(classify -> classify.equals("true"))
-						.or(false);
-					if (classifiable) {
+					com.google.common.base.Optional<edu.stanford.protege.metaproject.api.ProjectOptions> options = project.getOptions();
+					if (options.isPresent() &&
+							"true".equals(options.get().getValue("classifiable"))) {
 						projects.add(project);
 					}
 				}
