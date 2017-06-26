@@ -142,8 +142,10 @@ public class ProtegeServer extends ServerLayer {
         try {
             HistoryFile historyFile = createHistoryFile(projectId);
             createCodegenFile(projectId.get());
+            com.google.common.base.Optional<ProjectOptions> opts =
+                    com.google.common.base.Optional.fromNullable(options.orElse(null));
             Project newProject = factory.getProject(
-                    projectId, projectName, description, owner, options);
+                    projectId, projectName, description, owner, opts);
             try {
                 writeLock.lock();
                 logger.info(printLog(token.getUser(), "Add project", newProject.toString()));
@@ -172,7 +174,7 @@ public class ProtegeServer extends ServerLayer {
    
     private ServerDocument createServerDocument(HistoryFile historyFile) {
         final URI serverAddress = configuration.getHost().getUri();
-        final Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
+        final com.google.common.base.Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
         if (registryPort.isPresent()) {
             Port port = registryPort.get();
             return new ServerDocument(serverAddress, port.get(), historyFile);
@@ -242,7 +244,7 @@ public class ProtegeServer extends ServerLayer {
             Project project = configuration.getProject(projectId);
             logger.info(printLog(token.getUser(), "Open project", project.toString()));
             final URI serverAddress = configuration.getHost().getUri();
-            final Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
+            final com.google.common.base.Optional<Port> registryPort = configuration.getHost().getSecondaryPort();
             final String path = getHistoryFilePath(projectId);
             if (registryPort.isPresent()) {
                 Port port = registryPort.get();
@@ -427,7 +429,7 @@ public class ProtegeServer extends ServerLayer {
             throws AuthorizationException, ServerServiceException {
         try {
             writeLock.lock();
-            Optional<Port> secondaryPort = getHost(token).getSecondaryPort();
+            com.google.common.base.Optional<Port> secondaryPort = getHost(token).getSecondaryPort();
             Host updatedHost = factory.getHost(hostAddress, secondaryPort);
             configuration = new ConfigurationBuilder(configuration)
                     .setHost(updatedHost)
@@ -445,9 +447,9 @@ public class ProtegeServer extends ServerLayer {
         URI hostAddress = getHost(token).getUri();
         try {
             writeLock.lock();
-            Optional<Port> secondaryPort = Optional.empty();
+            com.google.common.base.Optional<Port> secondaryPort = com.google.common.base.Optional.absent();
             if (portNumber > 0) {
-                secondaryPort = Optional.of(factory.getPort(portNumber));
+                secondaryPort = com.google.common.base.Optional.of(factory.getPort(portNumber));
             }
             Host updatedHost = factory.getHost(hostAddress, secondaryPort);
             configuration = new ConfigurationBuilder(configuration)
