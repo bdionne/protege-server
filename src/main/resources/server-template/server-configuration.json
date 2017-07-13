@@ -74,6 +74,10 @@
       "description": "Use as template to clone thesaurus like ontology projects",
       "owner": "bob",
       "options": {
+      	"deprecated_concept_status": [
+          "Retired_Concept",
+          "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#Concept_Status"
+        ],
         "deprecated_child": [
           "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#OLD_CHILD"
         ],
