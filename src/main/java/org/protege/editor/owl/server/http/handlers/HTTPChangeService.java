@@ -2,6 +2,7 @@ package org.protege.editor.owl.server.http.handlers;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -261,7 +262,11 @@ public class HTTPChangeService extends BaseRoutingHandler {
 		Files.createDirectories(Paths.get(archiveDir));
 		Files.move(Paths.get(dataDir + historyName), Paths.get(archiveDir + historyName));
 		Files.move(Paths.get(dataDir + snapshotName), Paths.get(archiveDir + snapshotName));
-		Files.delete(Paths.get(backupName));
+		try {
+			Files.delete(Paths.get(backupName));
+		} catch (NoSuchFileException e) {
+			// no back up means no history, ok to proceed, just ignore this
+		}
 		Files.createFile(Paths.get(dataDir + historyName));
 
 		serverLayer.saveProjectSnapshot(snapShot, projectId, os);
