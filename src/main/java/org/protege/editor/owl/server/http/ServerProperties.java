@@ -40,4 +40,8 @@ public final class ServerProperties {
     public static final String PROJECTID_HEADER = "X-ProjectId";
     public static final String SNAPSHOT_CHECKSUM_HEADER = "X-SnapshotId";
     public static final int HISTORY_SNAPSHOT_OUT_OF_DATE = 499;
+
+    // pellette
+
+	public static final String PELLET_ADMIN_PASSWORD = "pellet_admin_password";
 }
