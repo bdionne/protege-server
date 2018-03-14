@@ -205,6 +205,7 @@ public final class HTTPServer {
 		webRouter.add("POST", SET_CODEGEN_SEQ, codeGenHandler);
 		webRouter.add("POST", EVS_REC, codeGenHandler);
 		webRouter.add("GET", GEN_CON_HIST, codeGenHandler);
+		webRouter.add("GET", EVS_HIST, codeGenHandler);
 		
 		
 		// create mataproject handler

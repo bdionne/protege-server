@@ -130,6 +130,10 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			History hist = (History) ois.readObject();
 			recordEvsHistory(hist, projectID);
+		} else if (requestPath.equals(ServerEndpoints.EVS_HIST)) {
+			List<History> evs_hist_records = loadEvsHistory(projectID);
+			ObjectOutputStream os = new ObjectOutputStream(exchange.getOutputStream());
+			os.writeObject(evs_hist_records);
 		} else if (requestPath.equals(ServerEndpoints.GEN_CON_HIST)) {
 			this.generateConceptHistory(projectID);
 			System.out.println("Write out con history file from evs history file");
@@ -184,6 +188,40 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 	
+	private List<History> loadEvsHistory(String projectId) throws ServerException {
+		try {
+			String projectDir = addRoot(projectId + File.separator);
+			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);
+			String curName = serverConfiguration.getProperty(CUR_EVS_HISTORY_FILE);
+			
+			String evsfile = projectDir + evsName;
+			String curfile = projectDir + curName;
+			
+
+			List<History> results = new ArrayList<History>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(curfile));
+			String s;
+			
+			while ((s = reader.readLine()) != null) {
+				s = s.trim();
+				String[] tokens = s.split("\t");
+				results.add(History.createEvsHist(tokens));
+				
+			}
+			
+			reader.close();	
+			
+			return results;
+
+		}
+		catch (Exception e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to produce EVS history", e);
+		}
+		
+		
+	}
+	
 	private void generateConceptHistory(String projectId) throws ServerException {
 		try {
 			String projectDir = addRoot(projectId + File.separator);
@@ -202,7 +240,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			while ((s = reader.readLine()) != null) {
 				s = s.trim();
 				String[] tokens = s.split("\t");
-				History h = History.create(tokens);
+				History h = History.createConHist(tokens);
 				if (h.getOp().equals("MODIFY")) {
 					map.put(h.getCode(), h);
 				} else {
