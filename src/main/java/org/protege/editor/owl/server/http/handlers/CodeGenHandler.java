@@ -131,7 +131,9 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			History hist = (History) ois.readObject();
 			recordEvsHistory(hist, projectID);
 		} else if (requestPath.equals(ServerEndpoints.EVS_HIST)) {
-			List<History> evs_hist_records = loadEvsHistory(projectID);
+			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
+			History hist = (History) ois.readObject();
+			List<History> evs_hist_records = loadEvsHistory(hist, projectID);
 			ObjectOutputStream os = new ObjectOutputStream(exchange.getOutputStream());
 			os.writeObject(evs_hist_records);
 		} else if (requestPath.equals(ServerEndpoints.GEN_CON_HIST)) {
@@ -188,7 +190,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 	}
 	
-	private List<History> loadEvsHistory(String projectId) throws ServerException {
+	private List<History> loadEvsHistory(History hist, String projectId) throws ServerException {
 		try {
 			String projectDir = addRoot(projectId + File.separator);
 			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);

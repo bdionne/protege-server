@@ -9,16 +9,37 @@ public class History implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -4521102352676041770L;
+	
+	private String start_date = null;
+	private String end_date = null;
+	
+	public String getStartDate() { return start_date; }
+	public String getEndDate() { return end_date; }
+	
+	
 	private String date;
-	private String user_name;
-	private String code;
+	public String getDate() { return date; }
+	private String user_name = null;
+	public String getUser_name() { return user_name; }
+	private String code = null;
 	public String getCode() { return code; }
 	private String name;
-	private String operation;
+	public String getName() { return name; }
+	private String operation = null;
+	public String getOperation() { return operation; }
 	public String getOp() { return operation; }
 	private String reference;
+	public String getReference() { return reference; }
 	
 	public enum HistoryType {EVS, CONCEPT};
+	
+	public void setQueryArgs(String start, String end, String user, String code, String op) {
+		start_date = start;
+		end_date = end;
+		user_name = user;
+		this.code = code;
+		operation = op;		
+	}
 	
 	public static History createConHist(String[] tokens) {
 		// ignore date when using EVS history for concept history
@@ -70,6 +91,9 @@ public class History implements Serializable {
 	
 	
 	
+	public History() {
+		// TODO Auto-generated constructor stub
+	}
 	private String formatNow() {
 		LocalDateTime date = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
