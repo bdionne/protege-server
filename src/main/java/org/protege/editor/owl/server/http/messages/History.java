@@ -10,11 +10,11 @@ public class History implements Serializable {
 	 */
 	private static final long serialVersionUID = -4521102352676041770L;
 	
-	private String start_date = null;
-	private String end_date = null;
+	private LocalDateTime start_date = null;
+	private LocalDateTime end_date = null;
 	
-	public String getStartDate() { return start_date; }
-	public String getEndDate() { return end_date; }
+	public LocalDateTime getStartDate() { return start_date; }
+	public LocalDateTime getEndDate() { return end_date; }
 	
 	
 	private String date;
@@ -34,8 +34,9 @@ public class History implements Serializable {
 	public enum HistoryType {EVS, CONCEPT};
 	
 	public void setQueryArgs(String start, String end, String user, String code, String op) {
-		start_date = start;
-		end_date = end;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		start_date = LocalDateTime.parse(start, formatter);
+		end_date = LocalDateTime.parse(end, formatter);
 		user_name = user;
 		this.code = code;
 		operation = op;		
@@ -55,12 +56,19 @@ public class History implements Serializable {
 		
 	}
 	
+	public static int cnt = 0;
+	
 	public static History createEvsHist(String[] tokens) {
+		
 		String date = tokens[0];
 		String un = tokens[1];
 		String code = tokens[2];
 		String name = tokens[3];
-		String op = tokens[4];
+		String op = null;
+		if (tokens.length == 5) {
+			op = tokens[4];			
+		}
+		
 		String ref = null;
 		if (tokens.length == 6) {		
 			ref = tokens[5];
@@ -94,7 +102,7 @@ public class History implements Serializable {
 	public History() {
 		// TODO Auto-generated constructor stub
 	}
-	private String formatNow() {
+	private static String formatNow() {
 		LocalDateTime date = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		return date.format(formatter);

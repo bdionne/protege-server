@@ -11,11 +11,14 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -207,9 +210,12 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			
 			while ((s = reader.readLine()) != null) {
 				s = s.trim();
+				History.cnt++;
 				String[] tokens = s.split("\t");
-				results.add(History.createEvsHist(tokens));
-				
+				Optional<History> pass = filterHist(hist, tokens);
+				if (pass.isPresent()) {
+					results.add(pass.get());
+				}
 			}
 			
 			reader.close();	
@@ -221,6 +227,66 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to produce EVS history", e);
 		}
 		
+		
+	}
+	
+	private Optional<History> filterHist(History query, String[] tokens) {
+		if (!(tokens.length >= 4)) {
+			return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
+		}
+		
+		// filter user name
+		if (query.getUser_name() != null) {
+			if (!tokens[1].equalsIgnoreCase(query.getUser_name())) {
+				return Optional.empty();
+			}
+		}
+		// filter code
+		if (query.getCode() != null) {
+			if (!tokens[2].equalsIgnoreCase(query.getCode())) {
+				return Optional.empty();
+			}
+		}
+		// filter op		
+		if (query.getOp() != null) {
+			if (!tokens[4].equalsIgnoreCase(query.getOp())) {
+				return Optional.empty();
+			}
+		}
+		
+		// filter by date
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		
+		LocalDateTime rec_date = null;
+		try {
+		 rec_date = LocalDateTime.parse(tokens[0], formatter);
+		} catch (Exception pe) {
+			try {
+			rec_date = LocalDateTime.parse(tokens[0], formatter2);
+			} catch (Exception ppe) {
+				rec_date = LocalDateTime.now();
+			}
+			
+		}
+		
+		if (query.getStartDate() != null) {
+			if (!query.getStartDate().isBefore(rec_date)) {
+				return Optional.empty();
+				
+			}
+		}
+		
+		if (query.getEndDate() != null) {
+			if (!query.getEndDate().isAfter(rec_date)) {
+				return Optional.empty();
+				
+			}
+		}
+		
+		// ok, passed all filters
+		
+		return Optional.of(History.createEvsHist(tokens)); 
 		
 	}
 	
