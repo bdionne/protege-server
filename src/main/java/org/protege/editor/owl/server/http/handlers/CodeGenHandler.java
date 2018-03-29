@@ -197,15 +197,15 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		try {
 			String projectDir = addRoot(projectId + File.separator);
 			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);
-			String curName = serverConfiguration.getProperty(CUR_EVS_HISTORY_FILE);
+			
 			
 			String evsfile = projectDir + evsName;
-			String curfile = projectDir + curName;
+			
 			
 
 			List<History> results = new ArrayList<History>();
 			
-			BufferedReader reader = new BufferedReader(new FileReader(curfile));
+			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
 			String s;
 			
 			while ((s = reader.readLine()) != null) {
