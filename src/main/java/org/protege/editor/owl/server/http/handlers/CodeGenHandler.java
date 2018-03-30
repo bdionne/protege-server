@@ -271,14 +271,16 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		}
 		
 		if (query.getStartDate() != null) {
-			if (!query.getStartDate().isBefore(rec_date)) {
+			if (!(query.getStartDate().isBefore(rec_date) ||
+					query.getStartDate().isEqual(rec_date))) {
 				return Optional.empty();
 				
 			}
 		}
 		
 		if (query.getEndDate() != null) {
-			if (!query.getEndDate().isAfter(rec_date)) {
+			if (!(query.getEndDate().isAfter(rec_date) ||
+					query.getEndDate().isEqual(rec_date))) {
 				return Optional.empty();
 				
 			}

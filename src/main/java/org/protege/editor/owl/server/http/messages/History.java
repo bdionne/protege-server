@@ -42,8 +42,12 @@ public class History implements Serializable {
 		if (!end.isEmpty()) {
 			end_date = LocalDateTime.parse(end, formatter);
 		}
-		user_name = user;
-		this.code = code;
+		if (!user.isEmpty()) {
+			user_name = user;
+		}
+		if (!code.isEmpty()) {
+			this.code = code;
+		}
 		operation = op;		
 	}
 	
