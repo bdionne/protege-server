@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -270,17 +271,21 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			
 		}
 		
+		LocalDate loc_date = rec_date.toLocalDate();
+		
+		
+		
 		if (query.getStartDate() != null) {
-			if (!(query.getStartDate().isBefore(rec_date) ||
-					query.getStartDate().isEqual(rec_date))) {
+			LocalDate win_start = query.getStartDate().toLocalDate();
+			if (win_start.compareTo(loc_date) > 0) {
 				return Optional.empty();
 				
 			}
 		}
 		
 		if (query.getEndDate() != null) {
-			if (!(query.getEndDate().isAfter(rec_date) ||
-					query.getEndDate().isEqual(rec_date))) {
+			LocalDate win_end = query.getEndDate().toLocalDate();
+			if (loc_date.compareTo(win_end) > 0) {
 				return Optional.empty();
 				
 			}
