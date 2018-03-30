@@ -35,8 +35,13 @@ public class History implements Serializable {
 	
 	public void setQueryArgs(String start, String end, String user, String code, String op) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		start_date = LocalDateTime.parse(start, formatter);
-		end_date = LocalDateTime.parse(end, formatter);
+		
+		if (!start.isEmpty()) {
+			start_date = LocalDateTime.parse(start, formatter);
+		}
+		if (!end.isEmpty()) {
+			end_date = LocalDateTime.parse(end, formatter);
+		}
 		user_name = user;
 		this.code = code;
 		operation = op;		
