@@ -74,7 +74,7 @@ public class History implements Serializable {
 		String code = tokens[2];
 		String name = tokens[3];
 		String op = null;
-		if (tokens.length == 5) {
+		if (tokens.length >= 5) {
 			op = tokens[4];			
 		}
 		
