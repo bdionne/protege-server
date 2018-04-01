@@ -232,7 +232,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	}
 	
 	private Optional<History> filterHist(History query, String[] tokens) {
-		if (!(tokens.length >= 4)) {
+		if (!(tokens.length >= 5)) {
 			return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
 		}
 		
