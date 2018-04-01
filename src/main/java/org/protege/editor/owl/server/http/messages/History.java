@@ -121,12 +121,15 @@ public class History implements Serializable {
 	
 	public String toRecord(HistoryType type) {
 		if (type == HistoryType.EVS) {
-			return date + "\t" +
+			StringBuilder sb = new StringBuilder(date + "\t" +
 					user_name + "\t" +
 					code + "\t" +
 					name + "\t" +
-					operation + "\t" +
-					reference;
+					operation + "\t");
+			if (reference != null) {
+				sb.append(reference);
+			}
+			return sb.toString();
 		} else {
 			return code + "\t" +
 					operation + "\t" +
