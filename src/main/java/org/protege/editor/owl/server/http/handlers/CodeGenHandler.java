@@ -233,7 +233,8 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	
 	private Optional<History> filterHist(History query, String[] tokens) {
 		if (!(tokens.length >= 5)) {
-			return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
+			//return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
+			return Optional.empty();
 		}
 		
 		// filter user name
