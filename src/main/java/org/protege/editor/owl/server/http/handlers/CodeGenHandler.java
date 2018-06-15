@@ -236,7 +236,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			//return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
 			return Optional.empty();
 		}
-		
+
 		// filter user name
 		if (query.getUser_name() != null) {
 			if (!tokens[1].equalsIgnoreCase(query.getUser_name())) {
@@ -255,49 +255,49 @@ public class CodeGenHandler extends BaseRoutingHandler {
 				return Optional.empty();
 			}
 		}
-		
+
 		// filter by date
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		
+
 		LocalDateTime rec_date = null;
 		try {
-		 rec_date = LocalDateTime.parse(tokens[0], formatter);
+			rec_date = LocalDateTime.parse(tokens[0], formatter);
 		} catch (Exception pe) {
 			try {
-			rec_date = LocalDateTime.parse(tokens[0], formatter2);
+				rec_date = LocalDate.parse(tokens[0], formatter2).atStartOfDay();
 			} catch (Exception ppe) {
-				rec_date = LocalDateTime.now();
+				return Optional.empty();
 			}
-			
 		}
-		
+
+
 		LocalDate loc_date = rec_date.toLocalDate();
-		
-		
-		
+
+
+
 		if (query.getStartDate() != null) {
 			LocalDate win_start = query.getStartDate().toLocalDate();
 			if (win_start.compareTo(loc_date) > 0) {
 				return Optional.empty();
-				
+
 			}
 		}
-		
+
 		if (query.getEndDate() != null) {
 			LocalDate win_end = query.getEndDate().toLocalDate();
 			if (loc_date.compareTo(win_end) > 0) {
 				return Optional.empty();
-				
+
 			}
 		}
-		
+
 		// ok, passed all filters
-		
+
 		return Optional.of(History.createEvsHist(tokens)); 
-		
+
 	}
-	
+
 	private void generateConceptHistory(String projectId) throws ServerException {
 		try {
 			String projectDir = addRoot(projectId + File.separator);
