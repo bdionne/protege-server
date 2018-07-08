@@ -204,6 +204,7 @@ public final class HTTPServer {
 		webRouter.add("GET", GEN_CODE, codeGenHandler);
 		webRouter.add("POST", SET_CODEGEN_SEQ, codeGenHandler);
 		webRouter.add("POST", EVS_REC, codeGenHandler);
+		webRouter.add("GET", EVS_CHECK_CREATE, codeGenHandler);
 		webRouter.add("GET", GEN_CON_HIST, codeGenHandler);
 		webRouter.add("POST", EVS_HIST, codeGenHandler);
 		

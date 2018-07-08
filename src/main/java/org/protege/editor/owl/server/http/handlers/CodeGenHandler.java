@@ -30,6 +30,8 @@ import org.protege.editor.owl.server.http.messages.History;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Iterables;
+
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -134,6 +136,11 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			History hist = (History) ois.readObject();
 			recordEvsHistory(hist, projectID);
+		} else if (requestPath.equals(ServerEndpoints.EVS_CHECK_CREATE)) {
+			String code = getQueryParameter(exchange, "code");
+			boolean created = checkEvsHistoryCreate(projectID, code);
+			ObjectOutputStream os = new ObjectOutputStream(exchange.getOutputStream());
+			os.writeObject(created);
 		} else if (requestPath.equals(ServerEndpoints.EVS_HIST)) {
 			ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
 			History hist = (History) ois.readObject();
@@ -231,6 +238,39 @@ public class CodeGenHandler extends BaseRoutingHandler {
 		
 	}
 	
+	private boolean checkEvsHistoryCreate(String projectId, String code) throws ServerException {
+		try {
+			String projectDir = addRoot(projectId + File.separator);
+			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);			
+			String evsfile = projectDir + evsName;
+			
+			
+
+			List<History> results = new ArrayList<History>();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(evsfile));
+			String s;
+			boolean found = false;
+			while ((s = reader.readLine()) != null) {
+				s = s.trim();
+				String[] tokens = s.split("\t");
+				if (tokens[2].equalsIgnoreCase(code) &&
+						tokens[4].equalsIgnoreCase("CREATE")) {
+					found = true;
+					break;
+				}
+			}
+			
+			reader.close();	
+			
+			return found;
+
+		}
+		catch (Exception e) {
+			throw new ServerException(StatusCodes.INTERNAL_SERVER_ERROR, "Server failed to produce EVS history", e);
+		}
+	}
+	
 	private Optional<History> filterHist(History query, String[] tokens) {
 		if (!(tokens.length >= 5)) {
 			//return Optional.of(new History(tokens[0], tokens[1], "bozo " + History.cnt, "", "",""));
@@ -308,7 +348,11 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			String curfile = projectDir + curName;
 			String confile = projectDir + conName;
 
-			Map<String, History> map = new HashMap<String, History>();
+			Map<String, History> mod_map = new HashMap<String, History>();
+			Map<String, History> create_map = new HashMap<String, History>();
+			Map<String, History> retire_map = new HashMap<String, History>();
+			Map<String, History> delete_map = new HashMap<String, History>();
+			
 			BufferedReader reader = new BufferedReader(new FileReader(curfile));
 			String s;
 			
@@ -318,15 +362,38 @@ public class CodeGenHandler extends BaseRoutingHandler {
 				String[] tokens = s.split("\t");
 				History h = History.createConHist(tokens);
 				if (h.getOp().equals("MODIFY")) {
-					map.put(h.getCode(), h);
+					mod_map.put(h.getCode(), h);
+				} else if (h.getOp().equals("CREATE")) {
+					create_map.put(h.getCode(), h);
+				} else if (h.getOp().equals("RETIRE")) {
+					retire_map.put(h.getCode(), h);
+				} else if (h.getOp().equals("DELETE")) {
+					delete_map.put(h.getCode(), h);
 				} else {
 					pw.println(h.toRecord(History.HistoryType.CONCEPT));
+					
 				}
 			}
 			
-			for (String c : map.keySet()) {
-				History hi = map.get(c);
-				pw.println(hi.toRecord(History.HistoryType.CONCEPT));
+			for (String c : create_map.keySet()) {
+				if (delete_map.get(c) == null) {
+					History hi = create_map.get(c);
+					pw.println(hi.toRecord(History.HistoryType.CONCEPT));
+				}				
+			}
+			
+			for (String c : mod_map.keySet()) {
+				if (delete_map.get(c) == null) {
+					History hi = mod_map.get(c);
+					pw.println(hi.toRecord(History.HistoryType.CONCEPT));
+				}				
+			}
+			
+			for (String c : retire_map.keySet()) {
+				if (delete_map.get(c) == null) {
+					History hi = retire_map.get(c);
+					pw.println(hi.toRecord(History.HistoryType.CONCEPT));
+				}				
 			}
 			
 			reader.close();			
