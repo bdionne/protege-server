@@ -241,7 +241,7 @@ public class CodeGenHandler extends BaseRoutingHandler {
 	private boolean checkEvsHistoryCreate(String projectId, String code) throws ServerException {
 		try {
 			String projectDir = addRoot(projectId + File.separator);
-			String evsName = serverConfiguration.getProperty(EVS_HISTORY_FILE);			
+			String evsName = serverConfiguration.getProperty(CUR_EVS_HISTORY_FILE);			
 			String evsfile = projectDir + evsName;
 			
 			
@@ -254,10 +254,15 @@ public class CodeGenHandler extends BaseRoutingHandler {
 			while ((s = reader.readLine()) != null) {
 				s = s.trim();
 				String[] tokens = s.split("\t");
-				if (tokens[2].equalsIgnoreCase(code) &&
-						tokens[4].equalsIgnoreCase("CREATE")) {
-					found = true;
-					break;
+				if (tokens.length < 5) {
+					// Do Nothing, bad record - System.out.println("Bad record: " + s );
+
+				} else {
+					if (tokens[2].equalsIgnoreCase(code) &&
+							tokens[4].equalsIgnoreCase("CREATE")) {
+						found = true;
+						break;
+					}
 				}
 			}
 			
