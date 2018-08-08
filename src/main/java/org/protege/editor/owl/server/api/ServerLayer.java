@@ -76,7 +76,7 @@ public abstract class ServerLayer implements ServerServices {
         String rootDir = getConfiguration().getServerRoot() + File.separator + projectId;
         String filename = rootDir + File.separator + getConfiguration().getProperty(CODEGEN_FILE);
         OutputStream os = new FileOutputStream(filename);
-        os.write("1000".getBytes());
+        os.write("999999".getBytes());
     }
     
     public String getHistoryFilePath(@Nonnull ProjectId projectId) {
