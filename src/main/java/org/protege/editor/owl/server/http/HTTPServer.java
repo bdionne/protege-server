@@ -60,10 +60,10 @@ public final class HTTPServer {
 	private ServerConfiguration serverConfiguration;
 
 	private Undertow webServer;
-	private Undertow adminServer;
+	//private Undertow adminServer;
 
 	private GracefulShutdownHandler webRouterHandler;
-	private GracefulShutdownHandler adminRouterHandler;
+	//private GracefulShutdownHandler adminRouterHandler;
 
 	private boolean isRunning = false;
 	
@@ -171,7 +171,7 @@ public final class HTTPServer {
 		 * Instantiate and setup HTTP routing handlers
 		 */
 		RoutingHandler webRouter = Handlers.routing();
-		RoutingHandler adminRouter = Handlers.routing();
+		//RoutingHandler adminRouter = Handlers.routing();
 		
 		// use default login service for admin web server
 	    LoginService adminLoginService = new DefaultLoginService();
@@ -189,7 +189,8 @@ public final class HTTPServer {
 		adminLoginService.setConfig(serverConfiguration);
 		HttpHandler admin_login_handler = new BlockingHandler(new HTTPLoginService(adminLoginService));
 		
-		adminRouter.add("POST", LOGIN, admin_login_handler);
+		//adminRouter.add("POST", ADMIN_LOGIN, admin_login_handler);
+		webRouter.add("POST", ADMIN_LOGIN, admin_login_handler);
 		
 		// create change service handler
 		HttpHandler changeServiceHandler = new AuthenticationHandler(new BlockingHandler(new HTTPChangeService(acf, changeService)));
@@ -218,11 +219,15 @@ public final class HTTPServer {
 		webRouter.add("GET", PROJECTS_UNCLASSIFIED, metaprojectHandler);
 		webRouter.add("GET", SERVER_STATUS, metaprojectHandler);
 
-		adminRouter.add("GET", METAPROJECT, metaprojectHandler);
-		adminRouter.add("POST", METAPROJECT, metaprojectHandler);
-		adminRouter.add("POST", PROJECT,  metaprojectHandler);
-		adminRouter.add("POST", PROJECT_SNAPSHOT,  metaprojectHandler);
-		adminRouter.add("DELETE", PROJECT,  metaprojectHandler);
+		//adminRouter.add("GET", METAPROJECT, metaprojectHandler);
+		//adminRouter.add("POST", METAPROJECT, metaprojectHandler);
+		webRouter.add("POST", METAPROJECT, metaprojectHandler);
+		//adminRouter.add("POST", PROJECT,  metaprojectHandler);
+		//adminRouter.add("POST", PROJECT_SNAPSHOT,  metaprojectHandler);
+		//adminRouter.add("DELETE", PROJECT,  metaprojectHandler);
+		webRouter.add("POST", PROJECT,  metaprojectHandler);
+		webRouter.add("POST", PROJECT_SNAPSHOT,  metaprojectHandler);
+	    webRouter.add("DELETE", PROJECT,  metaprojectHandler);
 		
 		ResourceHandler rh = Handlers.resource(
 				new PathResourceManager(Paths.get(serverConfiguration.getServerRoot()), 100, false, null))
@@ -230,14 +235,14 @@ public final class HTTPServer {
 		
 		HttpHandler arh = new AuthenticationHandler(rh);
 		
-		adminRouter.add("GET", serverConfiguration.getProperty(CON_HISTORY_FILE), arh);
+		webRouter.add("GET", serverConfiguration.getProperty(CON_HISTORY_FILE), arh);
    
 		
 		// create server handler
 		AuthenticationHandler serverHandler = new AuthenticationHandler(new BlockingHandler(new HTTPServerHandler()));
-		adminRouter.add("POST", SERVER_RESTART, serverHandler);
-		adminRouter.add("POST", SERVER_STOP, serverHandler);
-		adminRouter.add("POST", SERVER_SHUTDOWN, serverHandler);
+		webRouter.add("POST", SERVER_RESTART, serverHandler);
+		webRouter.add("POST", SERVER_STOP, serverHandler);
+		webRouter.add("POST", SERVER_SHUTDOWN, serverHandler);
 		
 		webRouter.add("GET", SERVER_PAUSE, serverHandler);
 		webRouter.add("GET", SERVER_RESUME, serverHandler);
@@ -245,7 +250,7 @@ public final class HTTPServer {
 		
 		// Build the servers
 		webRouterHandler = Handlers.gracefulShutdown(Handlers.exceptionHandler(webRouter));
-		adminRouterHandler = Handlers.gracefulShutdown(Handlers.exceptionHandler(adminRouter));
+		//adminRouterHandler = Handlers.gracefulShutdown(Handlers.exceptionHandler(adminRouter));
 		
 		logger.info("Starting server instances");
 		final URI serverHostUri = serverConfiguration.getHost().getUri();
@@ -259,7 +264,7 @@ public final class HTTPServer {
 					.build();
 			webServer.start();
 			logger.info("... Web server has started at port " + serverHostUri.getPort());
-			
+			/**
 			adminServer = Undertow.builder()
 					.addHttpsListener(serverAdminPort, serverHostUri.getHost(), ctx)
 					.setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
@@ -267,6 +272,7 @@ public final class HTTPServer {
 					.build();
 			adminServer.start();
 			logger.info("... Admin server has started at port " + serverAdminPort);
+			**/
 		}
 		else {
 			webServer = Undertow.builder()
@@ -276,7 +282,7 @@ public final class HTTPServer {
 					.build();
 			webServer.start();
 			logger.info("... Web server has started at port " + serverHostUri.getPort());
-			
+			/**
 			adminServer = Undertow.builder()
 					.addHttpListener(serverAdminPort, serverHostUri.getHost())
 					.setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
@@ -284,6 +290,7 @@ public final class HTTPServer {
 					.build();
 			adminServer.start();
 			logger.info("... Admin server has started at port " + serverAdminPort);
+			**/
 		}
 		isRunning = true;
 	}
@@ -325,6 +332,7 @@ public final class HTTPServer {
 					webServer = null;
 					logger.info("... Web server has stopped");
 				}
+				/**
 				if (adminServer != null) {
 					if (adminRouterHandler != null) {
 						adminRouterHandler.shutdown();
@@ -333,6 +341,7 @@ public final class HTTPServer {
 					adminServer = null;
 					logger.info("... Admin server has stopped");
 				}
+				**/
 				isRunning = false;
 			}
 			catch (Exception e) {

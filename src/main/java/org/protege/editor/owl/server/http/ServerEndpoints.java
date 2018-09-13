@@ -11,6 +11,7 @@ public class ServerEndpoints {
 	public static final String ROOT_PATH = "/nci_protege";
 
 	public static final String LOGIN = ROOT_PATH + "/login";
+	public static final String ADMIN_LOGIN = ROOT_PATH + "/admin/login";
 
 	public static final String PROJECT = ROOT_PATH + "/meta/project";
 	public static final String PROJECT_SNAPSHOT = ROOT_PATH + "/meta/project/snapshot";
