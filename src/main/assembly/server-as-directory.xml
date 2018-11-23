@@ -22,6 +22,11 @@
     </fileSets>
     <dependencySets>
         <dependencySet>
+           <outputDirectory>/lib</outputDirectory>
+           <unpack>false</unpack>
+           <scope>runtime</scope>
+        </dependencySet>
+        <!-- dependencySet>
             <includes>
                 <include>edu.stanford.protege:metaproject:jar</include>
                 <include>io.undertow:undertow-core:jar</include>
@@ -51,7 +56,7 @@
             </includes>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <outputDirectory>bundles</outputDirectory>
-        </dependencySet>
+        </dependencySet -->
     </dependencySets>
     <files>
         <file>

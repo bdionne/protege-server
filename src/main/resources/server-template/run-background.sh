@@ -7,6 +7,6 @@ nohup java -Xmx4000M -Xms1500M \
      -Dorg.protege.editor.owl.server.security.ssl.keystore=protege-server.jks \
      -Dorg.protege.editor.owl.server.security.ssl.keystore.type=JKS \
      -Dorg.protege.editor.owl.server.security.ssl.password=<password-to-keystore> \
-     -cp "bundles/*" \
+     -cp "bundles/*:lib/*" \
      org.protege.editor.owl.server.http.HTTPServer </dev/null >console.txt 2>&1 &
      
