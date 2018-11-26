@@ -26,42 +26,12 @@
            <unpack>false</unpack>
            <scope>runtime</scope>
         </dependencySet>
-        <!-- dependencySet>
-            <includes>
-                <include>edu.stanford.protege:metaproject:jar</include>
-                <include>io.undertow:undertow-core:jar</include>
-                <include>org.jboss.xnio:xnio-nio:jar</include>
-                <include>org.jboss.xnio:xnio-api:jar</include>
-                <include>org.openrdf.sesame:sesame-model:jar</include>
-                <include>org.openrdf.sesame:sesame-rio-api:jar</include>
-                <include>org.openrdf.sesame:sesame-util:jar</include>
-                <include>net.sf.trove4j:trove4j:jar</include>
-                <include>org.tukaani:xz:jar</include>
-                <include>net.sourceforge.owlapi:owlapi-osgidistribution:jar</include>
-                <include>net.sourceforge.owlapi:binaryowl:jar</include>
-                <include>commons-cli:commons-cli:jar</include>
-                <include>org.apache.felix:org.apache.felix.configadmin:jar</include>
-                <include>org.apache.felix:org.apache.felix.log:jar</include>
-                <include>org.apache.felix:org.apache.felix.metatype:jar</include>
-                <include>org.apache.felix:org.apache.felix.scr:jar</include>
-                <include>org.slf4j:slf4j-api:jar</include>
-                <include>com.google.guava:guava:jar</include>
-                <include>ch.qos.logback:logback-core:jar</include>
-                <include>ch.qos.logback:logback-classic:jar</include>
-                <include>com.google.inject:guice:jar</include>
-                <include>com.google.inject.extensions:guice-assistedinject:jar</include>
-                <include>com.google.inject.extensions:guice-multibindings:jar</include>
-                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.javax-inject:jar</include>
-                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:jar</include>
-            </includes>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-            <outputDirectory>bundles</outputDirectory>
-        </dependencySet -->
+        
     </dependencySets>
     <files>
         <file>
             <source>target/${project.build.finalName}.jar</source>
-            <outputDirectory>bundles</outputDirectory>
+            <outputDirectory>/lib</outputDirectory>
             <destName>org.protege.owl.server.jar</destName>
         </file>
     </files>
