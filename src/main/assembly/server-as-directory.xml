@@ -22,7 +22,7 @@
     </fileSets>
     <dependencySets>
         <dependencySet>
-           <outputDirectory>/lib</outputDirectory>
+           <outputDirectory>lib</outputDirectory>
            <unpack>false</unpack>
            <scope>runtime</scope>
         </dependencySet>
@@ -31,7 +31,7 @@
     <files>
         <file>
             <source>target/${project.build.finalName}.jar</source>
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>lib</outputDirectory>
             <destName>org.protege.owl.server.jar</destName>
         </file>
     </files>
