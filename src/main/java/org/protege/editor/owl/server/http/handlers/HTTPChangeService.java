@@ -17,6 +17,8 @@ import org.protege.editor.owl.server.api.ServerLayer;
 import org.protege.editor.owl.server.api.exception.AuthorizationException;
 import org.protege.editor.owl.server.api.exception.OutOfSyncException;
 import org.protege.editor.owl.server.api.exception.ServerServiceException;
+import org.protege.editor.owl.server.change.ChangeDocumentPool;
+import org.protege.editor.owl.server.change.DefaultChangeService;
 import org.protege.editor.owl.server.http.HTTPServer;
 import org.protege.editor.owl.server.http.ServerEndpoints;
 import org.protege.editor.owl.server.http.ServerProperties;
@@ -36,7 +38,7 @@ import io.undertow.util.StatusCodes;
 public class HTTPChangeService extends BaseRoutingHandler {
 
 	private final ServerLayer serverLayer;
-	private final ChangeService changeService;
+	private ChangeService changeService;
 
 	static enum PauseAllowed {
 		OK, NOT_WORKFLOW_MANAGER, NOT_PAUSING_USER, SERVER_PAUSED;
@@ -98,11 +100,28 @@ public class HTTPChangeService extends BaseRoutingHandler {
 	private void handlingRequest(HttpServerExchange exchange)
 			throws IOException, ClassNotFoundException, LoginTimeoutException, ServerException {
 		ObjectInputStream ois = new ObjectInputStream(exchange.getInputStream());
-
+		
 		String requestPath = exchange.getRequestPath();
+		if (HTTPServer.server().isPaused()) {
+			List<String> allowedPausedEndpoints = Lists.newArrayList(
+				ServerEndpoints.COMMIT, ServerEndpoints.SQUASH, ServerEndpoints.LATEST_CHANGES);
+			if (allowedPausedEndpoints.contains(requestPath)) {
+				User user = this.getAuthToken(exchange).getUser();
+				PauseAllowed ccs = PauseAllowed.create(projectId(exchange), user, requestPath);
+				if (!ccs.ok()) {
+					throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, ccs.message());
+				}
+			}
+			else {
+				throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, PauseAllowed.SERVER_PAUSED.message());
+			}
+		}
+
+		
 		if (	requestPath.equals(ServerEndpoints.COMMIT) ||
 				requestPath.equals(ServerEndpoints.HEAD) ||
 				requestPath.equals(ServerEndpoints.ALL_CHANGES) ||
+				requestPath.equals(ServerEndpoints.LATEST_CHANGES) ||
 				requestPath.equals(ServerEndpoints.SQUASH)) {
 			ProjectId projectId = projectId(exchange);
 
@@ -119,20 +138,7 @@ public class HTTPChangeService extends BaseRoutingHandler {
 			}
 		}
 
-		if (HTTPServer.server().isPaused()) {
-			List<String> allowedPausedEndpoints = Lists.newArrayList(
-				ServerEndpoints.COMMIT, ServerEndpoints.SQUASH, ServerEndpoints.LATEST_CHANGES);
-			if (allowedPausedEndpoints.contains(requestPath)) {
-				User user = this.getAuthToken(exchange).getUser();
-				PauseAllowed ccs = PauseAllowed.create(projectId(exchange), user, requestPath);
-				if (!ccs.ok()) {
-					throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, ccs.message());
-				}
-			}
-			else {
-				throw new ServerException(StatusCodes.SERVICE_UNAVAILABLE, PauseAllowed.SERVER_PAUSED.message());
-			}
-		}
+		
 
 		if (requestPath.equals(ServerEndpoints.COMMIT)) {
 			CommitBundle bundle = (CommitBundle) ois.readObject();
@@ -239,8 +245,6 @@ public class HTTPChangeService extends BaseRoutingHandler {
 		HistoryFile historyFile = serverLayer.createHistoryFile(projectId);
 		String historyName = historyFile.getName();
 
-		changeService.clearHistoryCacheEntry(historyFile);
-
 		String archiveDir = serverLayer.getConfiguration().getProperty(ServerProperties.ARCHIVE_ROOT)
 				+ File.separator
 				+ projectId.get()
@@ -270,5 +274,7 @@ public class HTTPChangeService extends BaseRoutingHandler {
 		Files.createFile(Paths.get(dataDir + historyName));
 
 		serverLayer.saveProjectSnapshot(snapShot, projectId, os);
+		
+		changeService.clearHistoryCacheEntry(historyFile);
 	}
 }

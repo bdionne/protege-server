@@ -309,7 +309,7 @@ public class ChangeHistoryUtils {
         }
     }
 
-    private static BinaryOWLMetadata getBinaryOWLMetadata(RevisionMetadata metadata) {
+    public static BinaryOWLMetadata getBinaryOWLMetadata(RevisionMetadata metadata) {
         BinaryOWLMetadata metadataRecord = new BinaryOWLMetadata();
         metadataRecord.setStringAttribute(RevisionMetadata.AUTHOR_USERNAME, metadata.getAuthorId());
         metadataRecord.setStringAttribute(RevisionMetadata.AUTHOR_NAME, metadata.getAuthorName());
