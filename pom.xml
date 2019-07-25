@@ -101,7 +101,7 @@
          </dependency>
          <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-distribution</artifactId>
+            <artifactId>owlapi-osgidistribution</artifactId>
             <version>${owlapi.version}</version>
         </dependency>
         <dependency>

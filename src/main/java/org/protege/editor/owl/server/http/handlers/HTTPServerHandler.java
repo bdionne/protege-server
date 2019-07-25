@@ -17,6 +17,7 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 	private static final Logger logger = LoggerFactory.getLogger(HTTPServerHandler.class);
 	
 	private boolean shutdownServer = false;
+	private boolean requiredRestarting = false;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -38,6 +39,19 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 			logger.info("Server shut down gracefully");
 			System.exit(0);					
 		}
+		
+		// A special directive when the server needs to be restarted after completing the request
+		if (requiredRestarting) {
+			try {
+				HTTPServer.server().restart();
+			}
+			catch (ServerException e) {
+				handleServerException(exchange, e);
+			}
+			finally {
+				requiredRestarting = false;
+			}
+		}
 	}
 
 	private void handlingRequest(HttpServerExchange exchange) throws ServerException, LoginTimeoutException {
@@ -52,6 +66,7 @@ public class HTTPServerHandler extends BaseRoutingHandler {
 			HTTPServer.server().pause(getAuthToken(exchange).getUser());
 		} else if (requestPath.equals(ServerEndpoints.SERVER_RESUME) && requestMethod.equals(Methods.GET)) {
 			HTTPServer.server().resume(getAuthToken(exchange).getUser());
+			requiredRestarting = true;
 		} else if (requestPath.equals(ServerEndpoints.SERVER_SHUTDOWN) && requestMethod.equals(Methods.POST)) {
 			shutdownServer = true;
 		}
